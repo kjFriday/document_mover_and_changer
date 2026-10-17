@@ -1,60 +1,122 @@
-"""Run the document pipeline: orders in, document files and a manifest out.
+"""ACME Doc Pipeline: orders in, document files and a manifest out.
 
-    python -m docpipe [--mock mock] [--out out] [--hub URL [--orders N] [--register]]
+    python -m docpipe [--db PATH | --mock]     open the window
+    python -m docpipe --cli [--out out] [--orders N] [--register] [--db PATH | --mock]
+    python -m docpipe --install | --uninstall  install for this user / remove it again
 
-Standalone it reads the bundled mock/ snapshot. With --hub it reads the newest orders from the CRUD
-hub; --register then writes back: a `documents` row for each order that had none, and one
-`documents.generated` event summarising the run (which the notification hub can pick up).
+It reads the shared ACME database by path (--db, ACME_DB, the saved setting, or
+%LOCALAPPDATA%\\ACME Inc\\acme.db) and falls back to the bundled mock/ snapshot when there is none.
+--register writes back a `documents` row for each order that had none and one `documents.generated`
+event summarising the run (which the notification hub can pick up).
 """
 
 import argparse
-import hashlib
 import json
 import os
 import sys
-import urllib.error
 
-from docpipe import source
-from docpipe.output.documents import build
+from docpipe import APP_ID, NAME, PUBLISHER, __version__, installer, paths, pipeline
+
+HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RUNTIME = ["docpipe_app.py", "docpipe", "icon", "mock", "README.md"]
+
+
+def program():
+    return installer.Program(APP_ID, NAME, __version__, PUBLISHER, installer.program_files(HERE, RUNTIME),
+                             ["{dir}\\docpipe_app.py"])
+
+
+def do_install(remove=False, root=None, desktop=False, purge=False):
+    plan = installer.plan(program(), HERE, root=root, desktop=desktop)
+    if remove:
+        gone = installer.uninstall(plan, purge_dir=paths.data_dir(APP_ID) if purge else None)
+        return f"{NAME} uninstalled." + ("" if gone else " (It was not installed.)") + " The database is kept."
+    installer.install(plan)
+    return f"{NAME} {__version__} installed in {plan['install_dir']}. Find it in the Start menu under ACME Inc."
+
+
+def parse(argv):
+    ap = argparse.ArgumentParser(prog="python -m docpipe", description=NAME)
+    ap.add_argument("--db", help="shared database file")
+    ap.add_argument("--mock", nargs="?", const=pipeline.MOCK, default=None, metavar="DIR",
+                    help="use the mock snapshot (default: the bundled one)")
+    ap.add_argument("--cli", action="store_true", help="run once in the console instead of opening the window")
+    ap.add_argument("--out", help="output folder (window default: %%LOCALAPPDATA%%\\ACME Inc\\ACME.DocPipe\\out)")
+    ap.add_argument("--orders", type=int, default=400, help="how many of the newest orders")
+    ap.add_argument("--register", action="store_true", help="write documents rows and a summary event to the database")
+    ap.add_argument("--version", action="store_true")
+    ap.add_argument("--install", action="store_true")
+    ap.add_argument("--desktop-shortcut", action="store_true")
+    ap.add_argument("--uninstall", action="store_true")
+    ap.add_argument("--quiet", action="store_true")
+    ap.add_argument("--purge", action="store_true")
+    ap.add_argument("--root", help="sandbox: install under this folder instead")
+    ap.add_argument("--smoke", metavar="FILE", help="open the window, run once, write a JSON report, close")
+    return ap.parse_args(argv)
+
+
+def tell(message, quiet):
+    print(message)
+    if not quiet and sys.stdout is None:  # pythonw: no console
+        from tkinter import messagebox
+        messagebox.showinfo(NAME, message)
+
+
+def cli(args, db_path):
+    from docpipe.gui import describe_source
+    kind, text = describe_source(db_path, args.mock is not None)
+    if args.register and kind != "db":
+        print(f"--register needs the shared database ({text})", file=sys.stderr)
+        return 1
+    result = pipeline.run(args.out or "out", db_path if kind == "db" else None, args.mock or pipeline.MOCK,
+                          args.orders, args.register)
+    print(f"source: {'shared database ' + db_path if kind == 'db' else text}")
+    print(f"orders: {result['orders']}; documents written: {len(result['manifest'])} {result['kinds']}")
+    print(f"orders with no documents row: {result['missing']}")
+    print(f"manifest: {os.path.join(result['out'], 'manifest.jsonl')}  sha256 {result['sha256'][:16]}")
+    if result["event"]:
+        print(f"database: {result['registered']} documents rows added; documents.generated event {result['event']}")
+    return 0
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog="python -m docpipe", description=__doc__.split("\n\n")[0])
-    ap.add_argument("--mock", default="mock", help="snapshot folder (default: mock)")
-    ap.add_argument("--out", default="out", help="output folder (default: out)")
-    ap.add_argument("--hub", default=os.environ.get("ACME_HUB", ""), help="CRUD hub base URL; empty = use --mock")
-    ap.add_argument("--orders", type=int, default=400, help="with --hub: how many of the newest orders")
-    ap.add_argument("--register", action="store_true", help="with --hub: write documents rows and a summary event")
-    args = ap.parse_args(argv)
+    args = parse(sys.argv[1:] if argv is None else argv)
+    if args.version:
+        tell(f"{NAME} {__version__}", args.quiet)
+        return 0
+    if args.install or args.uninstall:
+        try:
+            tell(do_install(args.uninstall, args.root, args.desktop_shortcut, args.purge), args.quiet)
+        except Exception as e:
+            tell(f"{NAME}: {e}", args.quiet)
+            return 1
+        return 0
+    db_path = paths.resolve_db(args.db, APP_ID)
+    if args.cli:
+        return cli(args, db_path)
 
-    hub = source.Hub(args.hub) if args.hub else None
-    try:
-        data = source.from_hub(hub, args.orders) if hub else source.from_mock(args.mock)
-    except (OSError, urllib.error.URLError) as e:
-        print(f"hub unreachable at {args.hub} ({e}); run without --hub to use the mock snapshot", file=sys.stderr)
-        return 1
-
-    manifest, missing = build(data, args.out)
-    lines = "".join(json.dumps(m, sort_keys=True) + "\n" for m in manifest)
-    with open(os.path.join(args.out, "manifest.jsonl"), "w", encoding="utf-8", newline="\n") as f:
-        f.write(lines)
-    kinds = {}
-    for m in manifest:
-        kinds[m["kind"]] = kinds.get(m["kind"], 0) + 1
-    print(f"source: {'live hub ' + args.hub if hub else 'mock snapshot ' + args.mock}")
-    print(f"orders: {len(data['orders'])}; documents written: {len(manifest)} {kinds}")
-    print(f"orders with no documents row: {len(missing)}")
-    print(f"manifest: {os.path.join(args.out, 'manifest.jsonl')}  sha256 {hashlib.sha256(lines.encode()).hexdigest()[:16]}")
-
-    if hub and args.register:
-        made = 0
-        for m in manifest:
-            if m["document_id"] is None:
-                m["document_id"] = hub.call("POST", "/api/documents", {"order_id": m["order_id"], "kind": m["kind"], "path": m["path"]})["id"]
-                made += 1
-        payload = {"documents": len(manifest), "registered": made, "manifest_sha256": hashlib.sha256(lines.encode()).hexdigest()}
-        event = hub.call("POST", "/api/events", {"kind": "documents.generated", "payload": json.dumps(payload), "status": "sent"})
-        print(f"hub: POST /api/documents x{made}; POST /api/events -> event {event['id']}")
+    import tkinter as tk
+    from docpipe import gui
+    gui.windows_identity()
+    root = tk.Tk()
+    out = args.out or os.path.join(paths.data_dir(APP_ID), "out")
+    window = gui.PipelineWindow(root, db_path, out, force_mock=args.mock is not None,
+                                installer_action=lambda remove: do_install(remove))
+    root.after(300, window.start)  # a read-only pass straight away, so the window opens on results
+    if args.smoke:
+        def report():
+            if window.run_button.instate(["disabled"]):
+                root.after(200, report)
+                return
+            kind, _ = window.source()
+            data = {"app_id": APP_ID, "version": __version__, "title": root.title(), "icon_set": window.icon_set,
+                    "source": kind, "db": db_path if kind == "db" else None,
+                    "counts": {"orders": window.last["orders"], "documents": len(window.last["manifest"])} if window.last else {}}
+            with open(args.smoke, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2)
+            root.destroy()
+        root.after(800, report)
+    root.mainloop()
     return 0
 
 

@@ -16,3 +16,12 @@ used; the rest of each source file was not copied.
 | `tests/test_shape.py` | `text-shape-knn` | `EF8D8DAA1324D4127D8255C4DA502945FC9BE1105A9AB70A222649DF87DA2C71` | `TestMissingWeightsFallBackRatherThanZero` | Ported as `test_missing_weights_fall_back_rather_than_zero`. The ranking and absent/corrupt/empty tests were rewritten with neutral fixtures. The input-validation, encoding and missing-input tests are new. |
 | `tests/test_hashing.py`, `tests/test_normalize.py` | none | | | New. |
 | `README.md`, `docpipe/__init__.py`, `docpipe/*/__init__.py` | none | | | New. |
+
+## Copied from the CRUD hub (same portfolio, AGPL-3.0)
+
+| File | Hub file | Changes |
+|---|---|---|
+| `docpipe/textsafe.py`, `tests/test_textsafe.py` | `textsafe.py`, `test_textsafe.py` | Unchanged apart from the import path. Cleans every string `docpipe.store` writes to the shared database. |
+| `docpipe/paths.py`, `tests/test_paths.py` | `paths.py`, `test_paths.py` | `APP_ID` is `ACME.DocPipe`. |
+| `docpipe/installer.py`, `tests/test_installer.py` | `installer.py`, `test_installer.py` | Import path only. |
+| `docpipe/gui.py` (`windows_identity`, `set_icon`) | `main.py` | Same calls; the window itself is new. |

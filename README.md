@@ -15,22 +15,40 @@ written in standard-library Python. It follows the five-stage design in
 
 ## Run
 
-Standalone, on the bundled `mock/` snapshot (400 orders and their documents):
-
 ```
 python -m docpipe
 ```
 
-Connected to the CRUD hub (the newest `--orders` orders; `--register` writes back a `documents` row for
-any order that had none, plus one `documents.generated` event with the run's manifest hash):
+Opens the **ACME Doc Pipeline** window. It reads the shared ACME database by path: `--db PATH`, the
+`ACME_DB` environment variable, the file chosen with **File → Database…**, or
+`%LOCALAPPDATA%\ACME Inc\acme.db`. With no database it runs on the bundled `mock/` snapshot (400 orders
+and their documents) and says so. **Run** renders the newest orders' documents; **Register in database**
+also writes a `documents` row for each order that had none and one `documents.generated` event with the
+run's manifest hash. The manifest lists every file with its SHA-256; select one to read it.
+
+The same run in a console:
 
 ```
-python -m docpipe --hub http://127.0.0.1:8700 --register
+python -m docpipe --cli --register
 ```
 
-Files and `manifest.jsonl` go to `out/` (`--out` changes it). The same input always gives the same
-files and hashes. A stored path that would climb out of `out/` is refused.
+Files and `manifest.jsonl` go to `--out` (the window's default is `%LOCALAPPDATA%\ACME Inc\ACME.DocPipe\out`).
+The same input always gives the same files and hashes. A stored path that would climb out of the output
+folder is refused.
 
+## Install
+
+```
+python -m docpipe --install
+```
+
+Installs for the current user: copies the program to `%LOCALAPPDATA%\Programs\ACME Inc\ACME Doc Pipeline\`,
+adds it to the Start menu under **ACME Inc** with its pixel icon (`--desktop-shortcut` for the desktop too),
+and lists it in **Apps & features**. `python -m docpipe --uninstall` (or Apps & features) removes it; the
+database is never deleted. The shortcut uses the `pythonw.exe` that installed it, so reinstall after
+upgrading Python. `--root DIR` sandboxes all of it in DIR.
+
+The icon is Silk "folder_go" by Mark James, CC BY 2.5, enlarged by nearest-neighbour (`icon/README.md`).
 ## Shape hints
 
 ```

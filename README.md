@@ -11,7 +11,25 @@ written in standard-library Python. It follows the five-stage design in
 | 3. Chunking & Structuring | - | Not started. |
 | 4. Validation, Normalization & Enrichment | `docpipe.enrich.normalize` | `fold(value, limit=240)`: folds titles, authors and table cells to one line of printable ASCII. It is lossy, so it is never used on body text. |
 | 4. Validation, Normalization & Enrichment | `docpipe.enrich.shape` | Text-shape signatures (character classes, line lengths, distinct tokens) and a nearest-neighbour lookup against a catalog of labelled exemplars. It returns document-type hints, which can also feed Stage 1 routing. Letters without case (CJK, Arabic, ...) get their own bucket. |
-| 5. Storage & Querying | - | Not started. |
+| 5. Storage & Querying | `docpipe.output.documents` | Renders each order's documents (invoice, receipt, packing slip) as plain text at the path its `documents` row names, and returns a manifest with each file's SHA-256. |
+
+## Run
+
+Standalone, on the bundled `mock/` snapshot (400 orders and their documents):
+
+```
+python -m docpipe
+```
+
+Connected to the CRUD hub (the newest `--orders` orders; `--register` writes back a `documents` row for
+any order that had none, plus one `documents.generated` event with the run's manifest hash):
+
+```
+python -m docpipe --hub http://127.0.0.1:8700 --register
+```
+
+Files and `manifest.jsonl` go to `out/` (`--out` changes it). The same input always gives the same
+files and hashes. A stored path that would climb out of `out/` is refused.
 
 ## Shape hints
 

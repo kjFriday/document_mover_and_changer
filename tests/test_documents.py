@@ -2,11 +2,10 @@ import io
 import json
 import os
 import tempfile
-import threading
 import unittest
-from contextlib import redirect_stdout
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from contextlib import redirect_stderr, redirect_stdout
 
+from dbfixture import mock_db
 from docpipe import source
 from docpipe.__main__ import main
 from docpipe.output.documents import build, default_path, money, render
@@ -78,55 +77,37 @@ class BuildTest(unittest.TestCase):
         self.assertEqual(missing, [])
 
 
-class FakeHub(BaseHTTPRequestHandler):
-    posts = []
-
-    def log_message(self, *args):
-        pass
-
-    def _send(self, code, body):
-        data = json.dumps(body).encode()
-        self.send_response(code)
-        self.send_header("Content-Length", str(len(data)))
-        self.end_headers()
-        self.wfile.write(data)
-
-    def do_GET(self):
-        table = self.path.split("?")[0].rsplit("/", 1)[-1]
-        rows = {"orders": [ORDER], "documents": [], "customers": [CUSTOMER], "products": [PRODUCT]}[table]
-        self._send(200, rows if "offset=0" in self.path else [])
-
-    def do_POST(self):
-        body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
-        FakeHub.posts.append((self.path, body))
-        self._send(201, {"id": len(FakeHub.posts)})
-
 
 class CliTest(unittest.TestCase):
-    def test_mock_and_hub_modes(self):
-        with tempfile.TemporaryDirectory() as out:
-            with redirect_stdout(io.StringIO()) as buf:
-                self.assertEqual(main(["--mock", MOCK, "--out", out]), 0)
-            self.assertIn("source: mock snapshot", buf.getvalue())
-            self.assertTrue(os.path.isfile(os.path.join(out, "manifest.jsonl")))
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = self._tmp.name
 
-        server = ThreadingHTTPServer(("127.0.0.1", 0), FakeHub)
-        threading.Thread(target=server.serve_forever, daemon=True).start()
-        try:
-            with tempfile.TemporaryDirectory() as out, redirect_stdout(io.StringIO()) as buf:
-                url = f"http://127.0.0.1:{server.server_address[1]}"
-                self.assertEqual(main(["--hub", url, "--out", out, "--register"]), 0)
-            paths = [p for p, _ in FakeHub.posts]
-            self.assertEqual(paths, ["/api/documents", "/api/events"])
-            self.assertEqual(FakeHub.posts[0][1]["path"], "invoices/2026/04/INV-000007.txt")
-            self.assertEqual(json.loads(FakeHub.posts[1][1]["payload"])["registered"], 1)
-        finally:
-            server.shutdown()
-            server.server_close()
+    def tearDown(self):
+        self._tmp.cleanup()
 
-    def test_unreachable_hub_fails_cleanly(self):
-        with tempfile.TemporaryDirectory() as out, redirect_stdout(io.StringIO()):
-            self.assertEqual(main(["--hub", "http://127.0.0.1:1", "--out", out]), 1)
+    def test_mock_mode(self):
+        out = os.path.join(self.tmp, "out")
+        with redirect_stdout(io.StringIO()) as buf:
+            self.assertEqual(main(["--cli", "--mock", MOCK, "--out", out]), 0)
+        self.assertIn("source: mock snapshot", buf.getvalue())
+        self.assertTrue(os.path.isfile(os.path.join(out, "manifest.jsonl")))
+
+    def test_database_mode_registers(self):
+        db = mock_db(self.tmp, {"orders": [ORDER], "customers": [CUSTOMER], "products": [dict(PRODUCT, category="Tools", price=0.1)]})
+        out = os.path.join(self.tmp, "out")
+        with redirect_stdout(io.StringIO()) as buf:
+            self.assertEqual(main(["--cli", "--db", db, "--out", out, "--register"]), 0)
+        self.assertIn("1 documents rows added", buf.getvalue())
+        with open(os.path.join(out, "manifest.jsonl"), encoding="utf-8") as f:
+            entry = json.loads(f.readline())
+        self.assertEqual(entry["path"], "invoices/2026/04/INV-000007.txt")
+        self.assertEqual(entry["document_id"], 1)  # the new row's id reaches the manifest
+
+    def test_register_needs_a_database(self):
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()) as err:
+            self.assertEqual(main(["--cli", "--db", os.path.join(self.tmp, "none.db"), "--out", self.tmp, "--register"]), 1)
+        self.assertIn("needs the shared database", err.getvalue())
 
 
 if __name__ == "__main__":

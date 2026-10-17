@@ -1,7 +1,7 @@
 # Provenance
 
 Each adapted file, the staged source it was cut from, and the symbols used.
-Sources are identified by their row in `D:\Portfolio\_extracted\MANIFEST.tsv`:
+Sources are identified by their row in the owner's private staging manifest (`_extracted/MANIFEST.tsv`, kept locally and not published):
 the `candidate` column and the full `sha256`. That row gives the source path.
 Paths and two symbol names are left out here because they contain words this
 project must not carry; the sha256 resolves them. Only the named symbols were

@@ -26,9 +26,12 @@ def program():
                              ["{dir}\\docpipe_app.py"])
 
 
-def do_install(remove=False, root=None, desktop=False, purge=False):
+def do_install(remove=False, root=None, desktop=False, purge=False, quiet=False):
     plan = installer.plan(program(), HERE, root=root, desktop=desktop)
     if remove:
+        if installer.wizard_uninstaller(plan):
+            # a setup made by ACME Wizard Maker installed it: its uninstaller keeps the files changed since
+            return installer.run_uninstaller(plan, installer.uninstall_args(root, quiet, purge)) or f"{NAME} uninstalled."
         gone = installer.uninstall(plan, purge_dir=paths.data_dir(APP_ID) if purge else None)
         return f"{NAME} uninstalled." + ("" if gone else " (It was not installed.)") + " The database is kept."
     installer.install(plan)
@@ -86,7 +89,10 @@ def main(argv=None):
         return 0
     if args.install or args.uninstall:
         try:
-            tell(do_install(args.uninstall, args.root, args.desktop_shortcut, args.purge), args.quiet)
+            tell(do_install(args.uninstall, args.root, args.desktop_shortcut, args.purge, args.quiet), args.quiet)
+        except installer.UninstallerFailed as e:  # its exit code goes on: 3 cancelled, 4 refused, ...
+            tell(f"{NAME}: {e}", args.quiet or e.code == installer.CANCELLED)
+            return e.code
         except Exception as e:
             tell(f"{NAME}: {e}", args.quiet)
             return 1

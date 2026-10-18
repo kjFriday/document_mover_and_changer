@@ -4,7 +4,8 @@ Install copies the program to %LOCALAPPDATA%\\Programs\\ACME Inc\\<name>\\ with 
 adds a Start-menu shortcut (and, if asked, a desktop one) with the program's pixel icon, and registers
 an uninstall entry under HKCU\\...\\CurrentVersion\\Uninstall\\<app id> so it shows in Apps & features.
 Uninstall removes all three. The shared database and settings are never touched (--purge also removes
-the program's own data folder).
+the program's own data folder). An install that a setup made by ACME Wizard Maker left (its marker names
+the installer) is removed by its own uninstall.exe instead, which keeps the files changed since.
 
 Three layers, so the tests never touch the real system:
   plan()      pure: every path, shortcut and registry value
@@ -25,6 +26,8 @@ from docpipe import paths
 
 UNINSTALL_KEY = r"HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall"
 MARKER = "install.json"
+WIZARD_UNINSTALLER = "uninstall.exe"  # what a setup made by ACME Wizard Maker leaves in the install folder
+CANCELLED = 3  # that uninstaller's exit code when the user cancels it in its window
 
 
 class Program:
@@ -236,3 +239,51 @@ def uninstall(p, runner=run_powershell, purge_dir=None):
     if purge_dir and os.path.isdir(purge_dir):
         shutil.rmtree(purge_dir)
     return removed
+
+
+class UninstallerFailed(RuntimeError):
+    """A wizard-made install's uninstaller did not finish; .code is its exit code (CANCELLED, 4 refused, ...)."""
+
+    def __init__(self, code, message):
+        super().__init__(message)
+        self.code = code
+
+
+def wizard_uninstaller(p):
+    """The uninstaller of an install that a setup made by ACME Wizard Maker left in the install folder (its
+    marker names this program and an installer), or None for this program's own install. Such an install is
+    removed by that uninstaller, which takes away only the files still as installed."""
+    marker = read_marker(p["install_dir"]) or {}
+    if marker.get("app_id") == p["app_id"] and marker.get("installer"):
+        return os.path.join(p["install_dir"], WIZARD_UNINSTALLER)
+    return None
+
+
+def uninstall_args(root=None, quiet=False, purge=False):
+    """The flags --uninstall passes on to that uninstaller."""
+    return (["-quiet"] if quiet else []) + (["-purge"] if purge else []) + (["-root", os.path.abspath(root)] if root else [])
+
+
+def run_and_wait(exe, args):
+    """The real runner for a program: wait for it -> (exit code, what it printed). It starts in the temp
+    folder, so it never holds the folder it removes."""
+    done = subprocess.run([exe, *args], cwd=tempfile.gettempdir(), capture_output=True, text=True,
+                          encoding="utf-8", errors="replace")
+    return done.returncode, (done.stdout + done.stderr).strip()
+
+
+def run_uninstaller(p, args, run=run_and_wait):
+    """Remove a wizard-made install (see wizard_uninstaller) through its uninstaller, run with args -> what it
+    printed. Raises UninstallerFailed, with its exit code, when it does not finish."""
+    exe = wizard_uninstaller(p)
+    if not exe:
+        raise RuntimeError(f"{p['install_dir']} holds no wizard-made install of {p['name']}")
+    os.chdir(tempfile.gettempdir())  # this process may outlive the uninstaller: its cwd must not hold the folder
+    try:
+        code, said = run(exe, args)
+    except OSError as e:
+        raise RuntimeError(f"run {exe}: {e}") from e
+    if code:
+        raise UninstallerFailed(code, said or ("Uninstall cancelled." if code == CANCELLED
+                                               else f"{WIZARD_UNINSTALLER} exited with {code}"))
+    return said

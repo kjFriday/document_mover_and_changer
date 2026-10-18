@@ -123,6 +123,68 @@ class InstallerTest(unittest.TestCase):
         self.assertEqual(installer.program_files(self.src, ["main.py", "pkg", "test_main.py", "missing.py"]),
                          ["main.py", "pkg/a.py"])
 
+    def wizard_install(self, p, app_id="ACME.Test"):
+        """What a setup made by ACME Wizard Maker leaves: its files, uninstall.exe and a marker with sha256 and
+        installer; then notes.txt changes, as a user would change it."""
+        os.makedirs(p["install_dir"], exist_ok=True)
+        files = ["main.py", "notes.txt", "app.ico", installer.WIZARD_UNINSTALLER]
+        for rel in files:
+            with open(os.path.join(p["install_dir"], rel), "w") as f:
+                f.write("as installed")
+        with open(os.path.join(p["install_dir"], installer.MARKER), "w") as f:
+            json.dump({"app_id": app_id, "name": p["name"], "version": p["version"], "files": files, "shortcuts": [],
+                       "sha256": {"notes.txt": "e3b0"}, "installer": "ACME Wizard Maker 0.1.0"}, f)
+        with open(os.path.join(p["install_dir"], "notes.txt"), "w") as f:
+            f.write("changed by the user")
+
+    def test_wizard_install_is_its_uninstallers_to_remove(self):
+        p = self.plan()
+        self.assertIsNone(installer.wizard_uninstaller(p))
+        installer.install(p, Recorder())
+        self.assertIsNone(installer.wizard_uninstaller(p))  # the program's own install
+        self.wizard_install(p, "ACME.Other")
+        self.assertIsNone(installer.wizard_uninstaller(p))  # never another program's uninstaller
+        self.wizard_install(p)
+        self.assertEqual(installer.wizard_uninstaller(p), os.path.join(p["install_dir"], "uninstall.exe"))
+
+    def test_uninstall_args(self):
+        self.assertEqual(installer.uninstall_args(), [])
+        self.assertEqual(installer.uninstall_args("sb", quiet=True, purge=True),
+                         ["-quiet", "-purge", "-root", os.path.abspath("sb")])
+
+    def test_run_uninstaller_keeps_changed_files_and_its_exit_code(self):
+        p, calls = self.plan(), []
+        self.wizard_install(p)
+
+        def busy(exe, args):
+            calls.append([exe, *args])
+            return 4, "Setup or uninstall of ACME Test App is already running."
+
+        os.chdir(p["install_dir"])
+        with self.assertRaises(installer.UninstallerFailed) as failed:
+            installer.run_uninstaller(p, installer.uninstall_args(self.root, quiet=True), run=busy)
+        self.assertEqual(failed.exception.code, 4)
+        self.assertIn("already running", str(failed.exception))
+        self.assertEqual(calls, [[os.path.join(p["install_dir"], "uninstall.exe"), "-quiet", "-root", os.path.abspath(self.root)]])
+        self.assertTrue(os.path.samefile(os.getcwd(), tempfile.gettempdir()))  # left the folder for it
+        with open(os.path.join(p["install_dir"], "notes.txt")) as f:
+            self.assertEqual(f.read(), "changed by the user")
+        self.assertEqual(installer.run_uninstaller(p, [], run=lambda exe, args: (0, "Removed ACME Test App 0.2.0.")),
+                         "Removed ACME Test App 0.2.0.")
+        with self.assertRaises(installer.UninstallerFailed) as cancelled:
+            installer.run_uninstaller(p, [], run=lambda exe, args: (installer.CANCELLED, ""))
+        self.assertEqual((cancelled.exception.code, str(cancelled.exception)), (3, "Uninstall cancelled."))
+        elsewhere = installer.plan(self.program, self.src, env={}, root=os.path.join(self.root, "x"))
+        with self.assertRaises(RuntimeError):  # no install there: nothing to run
+            installer.run_uninstaller(elsewhere, [], run=busy)
+        self.assertEqual(len(calls), 1)
+
+    @unittest.skipUnless(os.name == "nt", "cmd.exe")
+    def test_run_and_wait_returns_the_exit_code(self):
+        self.assertEqual(installer.run_and_wait("cmd.exe", ["/d", "/c", "echo kept & exit 4"]), (4, "kept"))
+        with self.assertRaises(OSError):
+            installer.run_and_wait(os.path.join(self.tmp.name, "uninstall.exe"), [])
+
     @unittest.skipUnless(os.name == "nt", "Windows shortcuts")
     def test_real_shortcut_in_sandbox(self):
         p = self.plan()

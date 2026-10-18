@@ -1,10 +1,14 @@
 """Doc Pipeline's identity: version, title, icon files and what an install copies."""
 
 import hashlib
+import io
+import json
 import os
 import re
 import struct
+import tempfile
 import unittest
+from contextlib import redirect_stdout
 
 import docpipe
 from docpipe import __main__ as app
@@ -35,6 +39,33 @@ class AppTest(unittest.TestCase):
         for needed in ("docpipe_app.py", "docpipe/gui.py", "docpipe/output/documents.py", "mock/orders.json", "icon/app.ico"):
             self.assertIn(needed, files)
         self.assertFalse([f for f in files if f.startswith("tests/") or "__pycache__" in f])
+
+    def test_uninstall_hands_a_wizard_made_install_to_its_uninstaller(self):
+        """--uninstall passes --quiet, --purge and --root on to uninstall.exe and returns its exit code."""
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        plan = installer.plan(app.program(), app.HERE, env={}, root=tmp.name)
+        os.makedirs(plan["install_dir"])
+        with open(os.path.join(plan["install_dir"], installer.MARKER), "w") as f:
+            json.dump({"app_id": docpipe.APP_ID, "name": docpipe.NAME, "version": docpipe.__version__, "files": [],
+                       "shortcuts": [], "installer": "ACME Wizard Maker 0.1.0"}, f)
+        calls = []
+
+        def refused(p, args):
+            calls.append((p["install_dir"], args))
+            raise installer.UninstallerFailed(4, f"Setup or uninstall of {docpipe.NAME} is already running.")
+
+        self.addCleanup(setattr, installer, "run_uninstaller", installer.run_uninstaller)
+        installer.run_uninstaller = refused
+        with redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(app.main(["--uninstall", "--quiet", "--purge", "--root", tmp.name]), 4)
+        self.assertEqual(calls, [(plan["install_dir"], ["-quiet", "-purge", "-root", os.path.abspath(tmp.name)])])
+        self.assertIn("already running", out.getvalue())
+        self.assertTrue(os.path.isfile(os.path.join(plan["install_dir"], installer.MARKER)))
+        installer.run_uninstaller = lambda p, args: f"Removed {docpipe.NAME} {docpipe.__version__}."
+        with redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(app.main(["--uninstall", "--quiet", "--root", tmp.name]), 0)
+        self.assertIn("Removed", out.getvalue())
 
     def test_icon_files(self):
         self.assertEqual(png_size(os.path.join(ICON, "silk-folder_go.png")), (16, 16))

@@ -70,3 +70,7 @@ python -m unittest discover -s tests
 ```
 
 Where each adapted function came from is listed in [PROVENANCE.md](PROVENANCE.md).
+
+## License
+
+AGPL-3.0, as the rest of the portfolio; see [LICENSE](LICENSE).

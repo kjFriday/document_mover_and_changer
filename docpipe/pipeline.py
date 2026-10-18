@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: docpipe/pipeline.py
+# About: One pipeline run, shared by the window and the command line: rows in, document files and...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """One pipeline run, shared by the window and the command line: rows in, document files and manifest out."""
 
 import hashlib
@@ -48,3 +57,5 @@ def run(out, db_path=None, mock=MOCK, orders=400, register=False, now=None):
         "manifest": manifest, "kinds": kinds, "missing": len(missing), "sha256": digest(manifest),
         "registered": made, "event": event,
     }
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=aca119b119e2cf9adfd8e308edf0e0031d5b95492c85a8aefe202065b18bbdf1 ====

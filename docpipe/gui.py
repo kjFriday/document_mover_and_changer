@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: docpipe/gui.py
+# About: The Doc Pipeline window: pick the source, run the pipeline, browse the manifest and read...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """The Doc Pipeline window: pick the source, run the pipeline, browse the manifest and read a document."""
 
 import ctypes
@@ -240,3 +249,5 @@ class PipelineWindow:
                             "Code: AGPL-3.0. All data is fictional.", justify="center", wraplength=420).pack(padx=24, pady=(0, 12))
         ttk.Button(win, text="OK", command=win.destroy).pack(pady=(0, 16))
         win.transient(self.root)
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=2f4a7aa4df37a65f5c9fd1f6edf78a04e9c36f860a7def199047af6dde627c54 ====

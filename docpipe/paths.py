@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: docpipe/paths.py
+# About: Where the ACME Inc. programs keep their files on this computer.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Where the ACME Inc. programs keep their files on this computer.
 
 The shared database is the only link between the six programs. Its path is chosen in this order:
@@ -68,3 +77,5 @@ def resolve_db(flag=None, app_id=APP_ID, env=None):
         if isinstance(choice, str) and choice.strip():
             return os.path.abspath(choice.strip())
     return default_db(env)
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=6e682249b7d0dcd6acc615feebbcc46d6f0d7968a982663993a2c4b873dd465b ====

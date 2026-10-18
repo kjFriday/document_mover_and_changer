@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: tests/test_documents.py
+# About: Tests for documents.py.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 import io
 import json
 import os
@@ -112,3 +121,5 @@ class CliTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=b820759a0d43b95b90aab3d6a715b62c8c5e11be705b0694a953d54f0272f221 ====

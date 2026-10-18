@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: docpipe/__main__.py
+# About: ACME Doc Pipeline: orders in, document files and a manifest out.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """ACME Doc Pipeline: orders in, document files and a manifest out.
 
     python -m docpipe [--db PATH | --mock]     open the window
@@ -129,3 +138,5 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main())
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=04bae3532bd3aa51aed41b0e910137c4a484f1c9fa63a218f8e03e908afc3f53 ====

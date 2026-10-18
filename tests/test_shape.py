@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: tests/test_shape.py
+# About: Tests for shape.py.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 import io
 import json
 import math
@@ -323,3 +332,5 @@ class CommandLineTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=c31864937fcdd1063c798a5a8a381a1618da0ae037cc6c9faf9bd5fed2bb0a14 ====

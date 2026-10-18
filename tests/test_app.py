@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: tests/test_app.py
+# About: Doc Pipeline's identity: version, title, icon files and what an install copies.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Doc Pipeline's identity: version, title, icon files and what an install copies."""
 
 import hashlib
@@ -84,3 +93,5 @@ class AppTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=9b9c86a7b47740e2af5e325c18f53c36438f75d7455eba5a8e62542678f2ab3c ====

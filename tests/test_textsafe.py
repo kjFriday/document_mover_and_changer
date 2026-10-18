@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: tests/test_textsafe.py
+# About: Tests for textsafe.clean.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Tests for textsafe.clean."""
 
 import unittest
@@ -47,3 +56,5 @@ class CleanTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=41c15629ab3aebfa074a5df756e2c1d8a5f7fc08b50a0def05fffe9e951c4aff ====

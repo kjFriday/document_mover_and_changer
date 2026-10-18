@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: docpipe/__init__.py
+# About: docpipe: a small, stdlib-only document pipeline.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """docpipe: a small, stdlib-only document pipeline.
 
 Subpackages follow the pipeline stages:
@@ -18,3 +27,5 @@ TITLE = f"ACME Inc. — {NAME} {__version__}"
 PUBLISHER = "ACME Inc. (fictional)"
 CREDIT = ("Icon: Silk by Mark James (famfamfam.com/lab/icons/silk), CC BY 2.5 "
           "(creativecommons.org/licenses/by/2.5), enlarged by nearest-neighbour.")
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=0c8f75be82f6abe1bba209035262284dba361a1875caaffc96606e6cd0967a61 ====

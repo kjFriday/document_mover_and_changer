@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: docpipe/enrich/normalize.py
+# About: Metadata normalisation for the enrich stage.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Metadata normalisation for the enrich stage.
 
 ``fold`` is for short metadata fields only: titles, authors, table cells.
@@ -45,3 +54,5 @@ def fold(value, limit=LIMIT):
         else:
             s = s[:max(limit, 0)]
     return s
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=c23ee738ea2ae8d1154f1c60d3da7a602efe7cf922f9637e336defffdbd24856 ====

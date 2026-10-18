@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: docpipe/enrich/shape.py
+# About: Text-shape signatures and nearest-neighbour document-type hints.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Text-shape signatures and nearest-neighbour document-type hints.
 
 A signature counts what a block of text is made of (lines, characters by
@@ -340,3 +349,5 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main())
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=b3d7862497e5ba3ce8cc9b19f462f1b0783ca90f7e1872d5957fe6f05f2d7442 ====

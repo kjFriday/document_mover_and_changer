@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: tests/test_normalize.py
+# About: Tests for normalize.py.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 import unittest
 
 from docpipe.enrich.normalize import LIMIT, fold
@@ -49,3 +58,5 @@ class FoldTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=80b40ba044c2113a04c0f6aec10c82320107bb6c5d8228be5815457c38055249 ====

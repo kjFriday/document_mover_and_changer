@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: docpipe/output/documents.py
+# About: Stage 5 output: render each order's documents (invoice, receipt, packing slip) as...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Stage 5 output: render each order's documents (invoice, receipt, packing slip) as plain-text files.
 
 Each `documents` row names its order, its kind and its relative path; `build` writes the file there
@@ -76,3 +85,5 @@ def build(data, out_dir):
                          "path": rel.replace(os.sep, "/"), "sha256": sha256_of(path)})
     manifest.sort(key=lambda m: m["path"])
     return manifest, missing
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=563fe12906138084305bbef51422b1cd70bdcef5e5b2cfb606228066a14f9137 ====

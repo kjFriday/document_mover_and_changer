@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: tests/dbfixture.py
+# About: A real SQLite database with the hub's exact schema (mock/schema.sql) for tests.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """A real SQLite database with the hub's exact schema (mock/schema.sql) for tests."""
 
 import json
@@ -28,3 +37,5 @@ def mock_db(folder, tables=None):
     conn.commit()
     conn.close()
     return path
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=7e6d77c5748d4b4505dea8d3f840691e381a0654a14ce20a56091e24af596d78 ====

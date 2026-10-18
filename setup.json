@@ -1,0 +1,22 @@
+{
+  "id": "ACME.DocPipe",
+  "name": "ACME Doc Pipeline",
+  "version": "0.2.0",
+  "publisher": "ACME Inc. (fictional)",
+  "group": "ACME Inc",
+  "icon": "icon/app.ico",
+  "files": [
+    {"from": "docpipe_app.py"},
+    {"from": "docpipe", "to": "docpipe"},
+    {"from": "icon", "to": "icon"},
+    {"from": "mock", "to": "mock"},
+    {"from": "README.md"}
+  ],
+  "exclude": ["test_*", "__pycache__", "*.pyc"],
+  "run": {"program": "{python}", "args": ["{app}\\docpipe_app.py"], "appUserModelId": "ACME.DocPipe"},
+  "requires": {"python": "3.10"},
+  "askFolder": true,
+  "shortcuts": {"ask": true, "startMenu": true, "desktop": false},
+  "purge": ["{localappdata}\\ACME Inc\\ACME.DocPipe"],
+  "output": "dist/{name}-{version}-setup.exe"
+}

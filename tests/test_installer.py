@@ -179,6 +179,60 @@ class InstallerTest(unittest.TestCase):
             installer.run_uninstaller(elsewhere, [], run=busy)
         self.assertEqual(len(calls), 1)
 
+    def entry(self, p, folder):
+        """The sandbox uninstall entry naming folder, as a setup writes it."""
+        os.makedirs(self.root, exist_ok=True)
+        with open(p["registry_file"], "w") as f:
+            json.dump({p["registry_key"]: {"InstallLocation": folder}}, f)
+
+    def test_located_finds_a_wizard_install_elsewhere(self):
+        p = self.plan()
+
+        def real(script):
+            raise AssertionError("read the real registry in a sandbox")
+
+        self.assertIs(installer.located(p, real), p)  # no entry
+        elsewhere = dict(p, install_dir=os.path.join(self.root, "Apps", "Journal"))
+        self.entry(p, elsewhere["install_dir"])
+        self.assertIs(installer.located(p, real), p)  # a stale entry
+        self.wizard_install(elsewhere)
+        there = installer.located(p, real)
+        self.assertEqual(there["install_dir"], elsewhere["install_dir"])
+        calls = []
+        self.assertEqual(installer.run_uninstaller(there, ["-quiet"], run=lambda exe, args: calls.append(exe) or (0, "")), "")
+        self.assertEqual(calls, [os.path.join(elsewhere["install_dir"], "uninstall.exe")])
+
+    def test_located_never_clears_an_install_elsewhere(self):
+        p = self.plan()
+        elsewhere = dict(p, install_dir=os.path.join(self.root, "Apps", "Journal"))
+        self.entry(p, elsewhere["install_dir"])
+        self.wizard_install(elsewhere, "ACME.Other")
+        with self.assertRaises(RuntimeError):
+            installer.located(p)
+        os.remove(os.path.join(elsewhere["install_dir"], installer.MARKER))
+        with self.assertRaises(RuntimeError):
+            installer.located(p)
+        with open(p["registry_file"]) as f:
+            self.assertIn(p["registry_key"], json.load(f))
+
+    def test_located_reads_the_real_registry(self):
+        p = installer.plan(self.program, self.src, env={}, interpreter=r"C:\Py\python.exe")
+        folder, scripts = os.path.join(self.root, "Apps", "Journal"), []
+        self.wizard_install(dict(p, install_dir=folder))
+        there = installer.located(p, lambda script: scripts.append(script) or folder)
+        self.assertEqual(there["install_dir"], folder)
+        self.assertIn("Get-ItemProperty -LiteralPath 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
+                      "\\ACME.Test' -Name InstallLocation", scripts[0])
+        self.assertIs(installer.located(p, lambda script: "Apps"), p)  # never a relative folder
+        self.assertIs(installer.located(p, lambda script: ""), p)
+
+    @unittest.skipUnless(os.name == "nt", "PowerShell")
+    def test_read_powershell(self):
+        self.assertEqual(installer.read_powershell("'M' + [char]0xF6 + 'tley'"), "M\u00f6tley")
+        p = installer.plan(self.program, self.src, env={}, interpreter=r"C:\Py\python.exe")
+        p["registry_key"] = installer.UNINSTALL_KEY + "\\ACME.NoSuchProgram.Test"
+        self.assertEqual(installer.install_location(p), "")
+
     @unittest.skipUnless(os.name == "nt", "cmd.exe")
     def test_run_and_wait_returns_the_exit_code(self):
         self.assertEqual(installer.run_and_wait("cmd.exe", ["/d", "/c", "echo kept & exit 4"]), (4, "kept"))

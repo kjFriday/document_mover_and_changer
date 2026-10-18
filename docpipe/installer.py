@@ -5,7 +5,8 @@ adds a Start-menu shortcut (and, if asked, a desktop one) with the program's pix
 an uninstall entry under HKCU\\...\\CurrentVersion\\Uninstall\\<app id> so it shows in Apps & features.
 Uninstall removes all three. The shared database and settings are never touched (--purge also removes
 the program's own data folder). An install that a setup made by ACME Wizard Maker left (its marker names
-the installer) is removed by its own uninstall.exe instead, which keeps the files changed since.
+the installer), here or in the folder its uninstall entry names, is removed by its own uninstall.exe instead,
+which keeps the files changed since.
 
 Three layers, so the tests never touch the real system:
   plan()      pure: every path, shortcut and registry value
@@ -169,6 +170,17 @@ def run_powershell(script):
         raise RuntimeError(done.stderr.strip() or f"PowerShell exited {done.returncode}")
 
 
+def read_powershell(script):
+    """Run a script like run_powershell -> what it printed (it sets its output to UTF-8 first)."""
+    flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+    done = subprocess.run(["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                           "-Command", "-"], input="[Console]::OutputEncoding = [Text.Encoding]::UTF8\n" + script,
+                          capture_output=True, text=True, encoding="utf-8", errors="replace", creationflags=flags)
+    if done.returncode != 0:
+        raise RuntimeError(done.stderr.strip() or f"PowerShell exited {done.returncode}")
+    return done.stdout.strip()
+
+
 def _read_registry_file(path):
     try:
         with open(path, encoding="utf-8") as f:
@@ -257,6 +269,35 @@ def wizard_uninstaller(p):
     if marker.get("app_id") == p["app_id"] and marker.get("installer"):
         return os.path.join(p["install_dir"], WIZARD_UNINSTALLER)
     return None
+
+
+def install_location(p, read=read_powershell):
+    """The folder the uninstall entry names, or "": from root\\registry.json in a sandbox, else the registry."""
+    if p["registry_file"]:
+        entry = _read_registry_file(p["registry_file"]).get(p["registry_key"])
+        location = entry.get("InstallLocation") if isinstance(entry, dict) else None
+        return location if isinstance(location, str) else ""
+    return read(f"(Get-ItemProperty -LiteralPath {ps_literal(p['registry_key'])} -Name InstallLocation "
+                "-ErrorAction SilentlyContinue).InstallLocation\n")
+
+
+def located(p, read=read_powershell):
+    """p aimed at the install its uninstall entry names when that lies outside p's install folder: a setup made
+    by ACME Wizard Maker installs where the user picks. Only such an install (see wizard_uninstaller) is handed
+    on; any other folder still there is refused, so its entry and shortcuts are never cleared."""
+    location = install_location(p, read)
+    if not os.path.isabs(location):
+        return p
+    location = os.path.normpath(location)
+    if os.path.normcase(location) == os.path.normcase(os.path.normpath(p["install_dir"])):
+        return p
+    if not os.path.exists(location):
+        return p  # a stale entry: clearing it orphans nothing
+    there = dict(p, install_dir=location)
+    if not wizard_uninstaller(there):
+        raise RuntimeError(f"{p['name']} is installed in {location}, which this copy cannot uninstall: "
+                           "use Apps & features")
+    return there
 
 
 def uninstall_args(root=None, quiet=False, purge=False):

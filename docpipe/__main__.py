@@ -29,6 +29,7 @@ def program():
 def do_install(remove=False, root=None, desktop=False, purge=False, quiet=False):
     plan = installer.plan(program(), HERE, root=root, desktop=desktop)
     if remove:
+        plan = installer.located(plan)
         if installer.wizard_uninstaller(plan):
             # a setup made by ACME Wizard Maker installed it: its uninstaller keeps the files changed since
             return installer.run_uninstaller(plan, installer.uninstall_args(root, quiet, purge)) or f"{NAME} uninstalled."

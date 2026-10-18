@@ -48,6 +48,8 @@ and lists it in **Apps & features**. `python -m docpipe --uninstall` (or Apps & 
 database is never deleted. The shortcut uses the `pythonw.exe` that installed it, so reinstall after
 upgrading Python. `--root DIR` sandboxes all of it in DIR.
 
+`wizard-maker.exe build setup.json` (ACME Wizard Maker) makes the setup, `dist\ACME Doc Pipeline-0.2.0-setup.exe`.
+
 The icon is Silk "folder_go" by Mark James, CC BY 2.5, enlarged by nearest-neighbour (`icon/README.md`).
 ## Shape hints
 

@@ -1,20 +1,29 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
 # Project: document_mover_and_changer | File: docpipe/__main__.py
-# About: ACME Doc Pipeline: orders in, document files and a manifest out.
+# About: Generic Company Doc Pipeline: orders in, document files and a manifest out.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
 # the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-"""ACME Doc Pipeline: orders in, document files and a manifest out.
+# ==== Generic Company Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: docpipe/__main__.py
+# About: Generic Company Doc Pipeline: orders in, document files and a manifest out.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+"""Generic Company Doc Pipeline: orders in, document files and a manifest out.
 
     python -m docpipe [--db PATH | --mock]     open the window
     python -m docpipe --cli [--out out] [--orders N] [--register] [--db PATH | --mock]
     python -m docpipe --install | --uninstall  install for this user / remove it again
 
-It reads the shared ACME database by path (--db, ACME_DB, the saved setting, or
-%LOCALAPPDATA%\\ACME Inc\\acme.db) and falls back to the bundled mock/ snapshot when there is none.
+It reads the shared Generic Company database by path (--db, GENERIC_COMPANY_DB, the saved setting, or
+%LOCALAPPDATA%\\Generic Company Inc\\generic_company.db) and falls back to the bundled mock/ snapshot when there is none.
 --register writes back a `documents` row for each order that had none and one `documents.generated`
 event summarising the run (which the notification hub can pick up).
 """
@@ -40,12 +49,12 @@ def do_install(remove=False, root=None, desktop=False, purge=False, quiet=False)
     if remove:
         plan = installer.located(plan)
         if installer.wizard_uninstaller(plan):
-            # a setup made by ACME Wizard Maker installed it: its uninstaller keeps the files changed since
+            # a setup made by Generic Company Wizard Maker installed it: its uninstaller keeps the files changed since
             return installer.run_uninstaller(plan, installer.uninstall_args(root, quiet, purge)) or f"{NAME} uninstalled."
         gone = installer.uninstall(plan, purge_dir=paths.data_dir(APP_ID) if purge else None)
         return f"{NAME} uninstalled." + ("" if gone else " (It was not installed.)") + " The database is kept."
     installer.install(plan)
-    return f"{NAME} {__version__} installed in {plan['install_dir']}. Find it in the Start menu under ACME Inc."
+    return f"{NAME} {__version__} installed in {plan['install_dir']}. Find it in the Start menu under Generic Company Inc."
 
 
 def parse(argv):
@@ -54,7 +63,7 @@ def parse(argv):
     ap.add_argument("--mock", nargs="?", const=pipeline.MOCK, default=None, metavar="DIR",
                     help="use the mock snapshot (default: the bundled one)")
     ap.add_argument("--cli", action="store_true", help="run once in the console instead of opening the window")
-    ap.add_argument("--out", help="output folder (window default: %%LOCALAPPDATA%%\\ACME Inc\\ACME.DocPipe\\out)")
+    ap.add_argument("--out", help="output folder (window default: %%LOCALAPPDATA%%\\Generic Company Inc\\GenericCompany.DocPipe\\out)")
     ap.add_argument("--orders", type=int, default=400, help="how many of the newest orders")
     ap.add_argument("--register", action="store_true", help="write documents rows and a summary event to the database")
     ap.add_argument("--version", action="store_true")
@@ -139,4 +148,4 @@ def main(argv=None):
 if __name__ == "__main__":
     sys.exit(main())
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=04bae3532bd3aa51aed41b0e910137c4a484f1c9fa63a218f8e03e908afc3f53 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=3695b5816a7645943810daef5c3e47a7b714bc8eb12d88e256c43e88fa76e0c1 ====

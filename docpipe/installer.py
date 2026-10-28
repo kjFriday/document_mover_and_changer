@@ -1,19 +1,28 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
 # Project: document_mover_and_changer | File: docpipe/installer.py
-# About: Install or uninstall an ACME program for the current user (no admin rights needed).
+# About: Install or uninstall an Generic Company program for the current user (no admin rights...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
 # the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-"""Install or uninstall an ACME program for the current user (no admin rights needed).
+# ==== Generic Company Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: docpipe/installer.py
+# About: Install or uninstall an Generic Company program for the current user (no admin rights needed).
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
 
-Install copies the program to %LOCALAPPDATA%\\Programs\\ACME Inc\\<name>\\ with an install.json marker,
+"""Install or uninstall an Generic Company program for the current user (no admin rights needed).
+
+Install copies the program to %LOCALAPPDATA%\\Programs\\Generic Company Inc\\<name>\\ with an install.json marker,
 adds a Start-menu shortcut (and, if asked, a desktop one) with the program's pixel icon, and registers
 an uninstall entry under HKCU\\...\\CurrentVersion\\Uninstall\\<app id> so it shows in Apps & features.
 Uninstall removes all three. The shared database and settings are never touched (--purge also removes
-the program's own data folder). An install that a setup made by ACME Wizard Maker left (its marker names
+the program's own data folder). An install that a setup made by Generic Company Wizard Maker left (its marker names
 the installer), here or in the folder its uninstall entry names, is removed by its own uninstall.exe instead,
 which keeps the files changed since.
 
@@ -36,7 +45,7 @@ from docpipe import paths
 
 UNINSTALL_KEY = r"HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall"
 MARKER = "install.json"
-WIZARD_UNINSTALLER = "uninstall.exe"  # what a setup made by ACME Wizard Maker leaves in the install folder
+WIZARD_UNINSTALLER = "uninstall.exe"  # what a setup made by Generic Company Wizard Maker leaves in the install folder
 CANCELLED = 3  # that uninstaller's exit code when the user cancels it in its window
 
 
@@ -76,12 +85,12 @@ def locations(env=None, root=None):
     env = os.environ if env is None else env
     if root:
         root = os.path.abspath(root)
-        return (os.path.join(root, "Programs", "ACME Inc"), os.path.join(root, "Start Menu", "ACME Inc"),
+        return (os.path.join(root, "Programs", "Generic Company Inc"), os.path.join(root, "Start Menu", "Generic Company Inc"),
                 os.path.join(root, "Desktop"), os.path.join(root, "registry.json"))
     appdata = env.get("APPDATA") or os.path.join(os.path.expanduser("~"), "AppData", "Roaming")
     profile = env.get("USERPROFILE") or os.path.expanduser("~")
-    return (os.path.join(paths.local_appdata(env), "Programs", "ACME Inc"),
-            os.path.join(appdata, "Microsoft", "Windows", "Start Menu", "Programs", "ACME Inc"),
+    return (os.path.join(paths.local_appdata(env), "Programs", "Generic Company Inc"),
+            os.path.join(appdata, "Microsoft", "Windows", "Start Menu", "Programs", "Generic Company Inc"),
             os.path.join(profile, "Desktop"), None)
 
 
@@ -271,7 +280,7 @@ class UninstallerFailed(RuntimeError):
 
 
 def wizard_uninstaller(p):
-    """The uninstaller of an install that a setup made by ACME Wizard Maker left in the install folder (its
+    """The uninstaller of an install that a setup made by Generic Company Wizard Maker left in the install folder (its
     marker names this program and an installer), or None for this program's own install. Such an install is
     removed by that uninstaller, which takes away only the files still as installed."""
     marker = read_marker(p["install_dir"]) or {}
@@ -292,7 +301,7 @@ def install_location(p, read=read_powershell):
 
 def located(p, read=read_powershell):
     """p aimed at the install its uninstall entry names when that lies outside p's install folder: a setup made
-    by ACME Wizard Maker installs where the user picks. Only such an install (see wizard_uninstaller) is handed
+    by Generic Company Wizard Maker installs where the user picks. Only such an install (see wizard_uninstaller) is handed
     on; any other folder still there is refused, so its entry and shortcuts are never cleared."""
     location = install_location(p, read)
     if not os.path.isabs(location):
@@ -338,4 +347,4 @@ def run_uninstaller(p, args, run=run_and_wait):
                                                else f"{WIZARD_UNINSTALLER} exited with {code}"))
     return said
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=cab294301b64d1c96c00e868bbd4795bc183616e5013d3b52f520f14ab7c9d71 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=c414aba85fdb113d297677c1e94b8af85d0dbf548d51418ac4df6da0a22d6c85 ====

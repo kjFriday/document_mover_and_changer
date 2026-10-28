@@ -1,13 +1,22 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
 # Project: document_mover_and_changer | File: docpipe/store.py
-# About: The shared ACME database, opened by path: the pipeline's only link to the other programs.
+# About: The shared Generic Company database, opened by path: the pipeline's only link to the...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
 # the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-"""The shared ACME database, opened by path: the pipeline's only link to the other programs.
+# ==== Generic Company Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: docpipe/store.py
+# About: The shared Generic Company database, opened by path: the pipeline's only link to the other programs.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+"""The shared Generic Company database, opened by path: the pipeline's only link to the other programs.
 
 from_db() gives the same shape as source.from_mock() (the newest orders, their documents rows, all
 customers and products). register() writes back what the run produced: a `documents` row for each
@@ -104,4 +113,4 @@ def register(conn, manifest, digest, when):
                            ("documents.generated", _clean("payload", payload), "sent", _clean("created_at", when)))
     return made, cur.lastrowid
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=f8703c01a4342b45d2e122782756b452a16a890f462027f90626b71c63cc9416 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=e255544423ab5428d77c65061bb80ce4b9d9964be67ad4a01ae2b181c3b738b0 ====

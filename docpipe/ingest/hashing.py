@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: document_mover_and_changer | File: docpipe/ingest/hashing.py
+# About: Content hashing for ingest: duplicate detection and provenance.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: document_mover_and_changer | File: docpipe/ingest/hashing.py
 # About: Content hashing for ingest: duplicate detection and provenance.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -33,4 +42,4 @@ def sha256_of(path, chunk=CHUNK):
             h.update(block)
     return h.hexdigest()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=4e10f09afad63f653600ae891d5c7a029150ff22137ed862343fe185e4759df1 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=5c6b179b75db627cb61de2cca3373e23eb8f8083e69ea067bfa41a9fc1c4fc94 ====

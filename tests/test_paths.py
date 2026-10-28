@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: document_mover_and_changer | File: tests/test_paths.py
+# About: ==== Generic Company Inc. portfolio ===============================================...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: document_mover_and_changer | File: tests/test_paths.py
 # About: Tests for paths.py.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -24,22 +33,22 @@ class PathsTest(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_default_is_shared(self):
-        self.assertEqual(paths.resolve_db(env=self.env), os.path.join(self.tmp.name, "ACME Inc", "acme.db"))
-        self.assertEqual(paths.data_dir("ACME.Dash", self.env), os.path.join(self.tmp.name, "ACME Inc", "ACME.Dash"))
+        self.assertEqual(paths.resolve_db(env=self.env), os.path.join(self.tmp.name, "Generic Company Inc", "generic_company.db"))
+        self.assertEqual(paths.data_dir("GenericCompany.Dash", self.env), os.path.join(self.tmp.name, "Generic Company Inc", "GenericCompany.Dash"))
 
     def test_precedence(self):
         paths.save_settings({"db": os.path.join(self.tmp.name, "saved.db")}, env=self.env)
         self.assertTrue(paths.resolve_db(env=self.env).endswith("saved.db"))
-        self.env["ACME_DB"] = os.path.join(self.tmp.name, "env.db")
+        self.env["GENERIC_COMPANY_DB"] = os.path.join(self.tmp.name, "env.db")
         self.assertTrue(paths.resolve_db(env=self.env).endswith("env.db"))
         self.assertTrue(paths.resolve_db(os.path.join(self.tmp.name, "flag.db"), env=self.env).endswith("flag.db"))
-        self.env["ACME_DB"] = "  "
+        self.env["GENERIC_COMPANY_DB"] = "  "
         self.assertTrue(paths.resolve_db(env=self.env).endswith("saved.db"))
 
     def test_settings_per_app(self):
-        paths.save_settings({"db": "a.db"}, "ACME.Hub", self.env)
-        self.assertEqual(paths.load_settings("ACME.CMS", self.env), {})
-        self.assertEqual(paths.load_settings("ACME.Hub", self.env)["db"], "a.db")
+        paths.save_settings({"db": "a.db"}, "GenericCompany.Hub", self.env)
+        self.assertEqual(paths.load_settings("GenericCompany.CMS", self.env), {})
+        self.assertEqual(paths.load_settings("GenericCompany.Hub", self.env)["db"], "a.db")
 
     def test_bad_or_foreign_settings(self):
         path = paths.settings_path(env=self.env)
@@ -62,4 +71,4 @@ class PathsTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=d4bfa3dbec4ce624818c029050af4b5603938fa49cfb3c0f61bbff9fa4547c90 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=e327e3101f7a969d56eeea5e058d8192b73e168beeeae95ba2629579298aa2df ====

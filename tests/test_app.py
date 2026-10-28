@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: document_mover_and_changer | File: tests/test_app.py
+# About: Doc Pipeline's identity: version, title, icon files and what an install copies.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: document_mover_and_changer | File: tests/test_app.py
 # About: Doc Pipeline's identity: version, title, icon files and what an install copies.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -40,7 +49,7 @@ class AppTest(unittest.TestCase):
         self.assertTrue(docpipe.TITLE.endswith(" " + docpipe.__version__))
         p = installer.plan(app.program(), app.HERE, env={}, root=os.path.join(ROOT, "_never_written"))
         self.assertEqual(p["registry"]["DisplayVersion"], docpipe.__version__)
-        self.assertEqual(p["app_id"], "ACME.DocPipe")
+        self.assertEqual(p["app_id"], "GenericCompany.DocPipe")
         self.assertTrue(p["shortcuts"][0]["args"].endswith('docpipe_app.py"'))
 
     def test_install_copies_runtime_only(self):
@@ -57,7 +66,7 @@ class AppTest(unittest.TestCase):
         os.makedirs(plan["install_dir"])
         with open(os.path.join(plan["install_dir"], installer.MARKER), "w") as f:
             json.dump({"app_id": docpipe.APP_ID, "name": docpipe.NAME, "version": docpipe.__version__, "files": [],
-                       "shortcuts": [], "installer": "ACME Wizard Maker 0.1.0"}, f)
+                       "shortcuts": [], "installer": "Generic Company Wizard Maker 0.1.0"}, f)
         calls = []
 
         def refused(p, args):
@@ -94,4 +103,4 @@ class AppTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=9b9c86a7b47740e2af5e325c18f53c36438f75d7455eba5a8e62542678f2ab3c ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=2988845038a66f3119c59a04ae086f8c79bee48bef49fbcf0d2ce4ec12a7d9ef ====

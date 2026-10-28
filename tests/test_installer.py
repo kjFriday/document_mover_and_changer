@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: document_mover_and_changer | File: tests/test_installer.py
+# About: ==== Generic Company Inc. portfolio ===============================================...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: document_mover_and_changer | File: tests/test_installer.py
 # About: Tests for installer.py.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -33,7 +42,7 @@ class InstallerTest(unittest.TestCase):
             with open(os.path.join(self.src, *rel.split("/")), "w") as f:
                 f.write("x" * 100)
         self.root = os.path.join(self.tmp.name, "sandbox")
-        self.program = installer.Program("ACME.Test", "ACME Test App", "0.2.0", "ACME Inc. (fictional)",
+        self.program = installer.Program("GenericCompany.Test", "Generic Company Test App", "0.2.0", "Generic Company Inc. (fictional)",
                                          ["main.py", "db.py", "icon/app.ico"], ["{dir}\\main.py"])
         self.cwd = os.getcwd()
 
@@ -47,33 +56,33 @@ class InstallerTest(unittest.TestCase):
 
     def test_plan_paths_and_registry(self):
         p = self.plan(desktop=True)
-        self.assertEqual(p["install_dir"], os.path.join(self.root, "Programs", "ACME Inc", "ACME Test App"))
-        self.assertEqual([os.path.basename(s["path"]) for s in p["shortcuts"]], ["ACME Test App.lnk"] * 2)
+        self.assertEqual(p["install_dir"], os.path.join(self.root, "Programs", "Generic Company Inc", "Generic Company Test App"))
+        self.assertEqual([os.path.basename(s["path"]) for s in p["shortcuts"]], ["Generic Company Test App.lnk"] * 2)
         reg = p["registry"]
         self.assertEqual(reg["DisplayVersion"], "0.2.0")
-        self.assertEqual(reg["DisplayName"], "ACME Test App 0.2.0")
+        self.assertEqual(reg["DisplayName"], "Generic Company Test App 0.2.0")
         self.assertEqual(reg["InstallDate"], "20261017")
         self.assertEqual((reg["NoModify"], reg["NoRepair"]), (1, 1))
         self.assertTrue(reg["DisplayIcon"].endswith(os.path.join("icon", "app.ico")))
         self.assertIn("--uninstall --root", reg["UninstallString"])
         self.assertTrue(reg["QuietUninstallString"].endswith("--quiet"))
-        self.assertEqual(p["registry_key"], installer.UNINSTALL_KEY + "\\ACME.Test")
+        self.assertEqual(p["registry_key"], installer.UNINSTALL_KEY + "\\GenericCompany.Test")
         self.assertEqual(p["shortcuts"][0]["args"], '"' + os.path.join(p["install_dir"], "main.py") + '"')
 
     def test_real_locations(self):
         env = {"LOCALAPPDATA": r"C:\L", "APPDATA": r"C:\R", "USERPROFILE": r"C:\U"}
         programs, start, desk, reg = installer.locations(env)
-        self.assertEqual(programs, os.path.join(r"C:\L", "Programs", "ACME Inc"))
-        self.assertEqual(start, os.path.join(r"C:\R", "Microsoft", "Windows", "Start Menu", "Programs", "ACME Inc"))
+        self.assertEqual(programs, os.path.join(r"C:\L", "Programs", "Generic Company Inc"))
+        self.assertEqual(start, os.path.join(r"C:\R", "Microsoft", "Windows", "Start Menu", "Programs", "Generic Company Inc"))
         self.assertIsNone(reg)
 
     def test_script_quotes_and_registry(self):
         p = installer.plan(self.program, self.src, env={"LOCALAPPDATA": r"C:\O'Brien"}, interpreter=r"C:\Py\python.exe")
         script = installer.ps_script(p)
-        self.assertIn("'C:\\O''Brien\\Programs\\ACME Inc\\ACME Test App\\icon\\app.ico,0'", script)
+        self.assertIn("'C:\\O''Brien\\Programs\\Generic Company Inc\\Generic Company Test App\\icon\\app.ico,0'", script)
         self.assertIn("-Name 'NoModify' -Value '1' -PropertyType DWord", script)
         self.assertIn("-Name 'DisplayVersion' -Value '0.2.0' -PropertyType String", script)
-        self.assertIn("New-Item -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ACME.Test'", script)
+        self.assertIn("New-Item -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\GenericCompany.Test'", script)
         removal = installer.ps_script(p, remove=True)
         self.assertIn("Remove-Item -LiteralPath 'HKCU:", removal)
         self.assertNotIn("CreateShortcut", removal)
@@ -84,7 +93,7 @@ class InstallerTest(unittest.TestCase):
 
     def test_round_trip(self):
         p, run = self.plan(), Recorder()
-        db = os.path.join(self.root, "acme.db")
+        db = os.path.join(self.root, "generic_company.db")
         os.makedirs(self.root, exist_ok=True)
         open(db, "w").close()
         installer.install(p, run)
@@ -110,14 +119,14 @@ class InstallerTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             installer.uninstall(p, Recorder())
         with open(os.path.join(p["install_dir"], installer.MARKER), "w") as f:
-            json.dump({"app_id": "ACME.Other"}, f)
+            json.dump({"app_id": "GenericCompany.Other"}, f)
         with self.assertRaises(RuntimeError):
             installer.install(p, Recorder())
         self.assertTrue(os.path.exists(os.path.join(p["install_dir"], "keep.txt")))
 
     def test_purge_only_the_data_folder(self):
         p, run = self.plan(), Recorder()
-        data = os.path.join(self.root, "data", "ACME.Test")
+        data = os.path.join(self.root, "data", "GenericCompany.Test")
         os.makedirs(data)
         installer.install(p, run)
         installer.uninstall(p, run, purge_dir=data)
@@ -132,8 +141,8 @@ class InstallerTest(unittest.TestCase):
         self.assertEqual(installer.program_files(self.src, ["main.py", "pkg", "test_main.py", "missing.py"]),
                          ["main.py", "pkg/a.py"])
 
-    def wizard_install(self, p, app_id="ACME.Test"):
-        """What a setup made by ACME Wizard Maker leaves: its files, uninstall.exe and a marker with sha256 and
+    def wizard_install(self, p, app_id="GenericCompany.Test"):
+        """What a setup made by Generic Company Wizard Maker leaves: its files, uninstall.exe and a marker with sha256 and
         installer; then notes.txt changes, as a user would change it."""
         os.makedirs(p["install_dir"], exist_ok=True)
         files = ["main.py", "notes.txt", "app.ico", installer.WIZARD_UNINSTALLER]
@@ -142,7 +151,7 @@ class InstallerTest(unittest.TestCase):
                 f.write("as installed")
         with open(os.path.join(p["install_dir"], installer.MARKER), "w") as f:
             json.dump({"app_id": app_id, "name": p["name"], "version": p["version"], "files": files, "shortcuts": [],
-                       "sha256": {"notes.txt": "e3b0"}, "installer": "ACME Wizard Maker 0.1.0"}, f)
+                       "sha256": {"notes.txt": "e3b0"}, "installer": "Generic Company Wizard Maker 0.1.0"}, f)
         with open(os.path.join(p["install_dir"], "notes.txt"), "w") as f:
             f.write("changed by the user")
 
@@ -151,7 +160,7 @@ class InstallerTest(unittest.TestCase):
         self.assertIsNone(installer.wizard_uninstaller(p))
         installer.install(p, Recorder())
         self.assertIsNone(installer.wizard_uninstaller(p))  # the program's own install
-        self.wizard_install(p, "ACME.Other")
+        self.wizard_install(p, "GenericCompany.Other")
         self.assertIsNone(installer.wizard_uninstaller(p))  # never another program's uninstaller
         self.wizard_install(p)
         self.assertEqual(installer.wizard_uninstaller(p), os.path.join(p["install_dir"], "uninstall.exe"))
@@ -167,7 +176,7 @@ class InstallerTest(unittest.TestCase):
 
         def busy(exe, args):
             calls.append([exe, *args])
-            return 4, "Setup or uninstall of ACME Test App is already running."
+            return 4, "Setup or uninstall of Generic Company Test App is already running."
 
         os.chdir(p["install_dir"])
         with self.assertRaises(installer.UninstallerFailed) as failed:
@@ -178,8 +187,8 @@ class InstallerTest(unittest.TestCase):
         self.assertTrue(os.path.samefile(os.getcwd(), tempfile.gettempdir()))  # left the folder for it
         with open(os.path.join(p["install_dir"], "notes.txt")) as f:
             self.assertEqual(f.read(), "changed by the user")
-        self.assertEqual(installer.run_uninstaller(p, [], run=lambda exe, args: (0, "Removed ACME Test App 0.2.0.")),
-                         "Removed ACME Test App 0.2.0.")
+        self.assertEqual(installer.run_uninstaller(p, [], run=lambda exe, args: (0, "Removed Generic Company Test App 0.2.0.")),
+                         "Removed Generic Company Test App 0.2.0.")
         with self.assertRaises(installer.UninstallerFailed) as cancelled:
             installer.run_uninstaller(p, [], run=lambda exe, args: (installer.CANCELLED, ""))
         self.assertEqual((cancelled.exception.code, str(cancelled.exception)), (3, "Uninstall cancelled."))
@@ -215,7 +224,7 @@ class InstallerTest(unittest.TestCase):
         p = self.plan()
         elsewhere = dict(p, install_dir=os.path.join(self.root, "Apps", "Journal"))
         self.entry(p, elsewhere["install_dir"])
-        self.wizard_install(elsewhere, "ACME.Other")
+        self.wizard_install(elsewhere, "GenericCompany.Other")
         with self.assertRaises(RuntimeError):
             installer.located(p)
         os.remove(os.path.join(elsewhere["install_dir"], installer.MARKER))
@@ -231,7 +240,7 @@ class InstallerTest(unittest.TestCase):
         there = installer.located(p, lambda script: scripts.append(script) or folder)
         self.assertEqual(there["install_dir"], folder)
         self.assertIn("Get-ItemProperty -LiteralPath 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
-                      "\\ACME.Test' -Name InstallLocation", scripts[0])
+                      "\\GenericCompany.Test' -Name InstallLocation", scripts[0])
         self.assertIs(installer.located(p, lambda script: "Apps"), p)  # never a relative folder
         self.assertIs(installer.located(p, lambda script: ""), p)
 
@@ -239,7 +248,7 @@ class InstallerTest(unittest.TestCase):
     def test_read_powershell(self):
         self.assertEqual(installer.read_powershell("'M' + [char]0xF6 + 'tley'"), "M\u00f6tley")
         p = installer.plan(self.program, self.src, env={}, interpreter=r"C:\Py\python.exe")
-        p["registry_key"] = installer.UNINSTALL_KEY + "\\ACME.NoSuchProgram.Test"
+        p["registry_key"] = installer.UNINSTALL_KEY + "\\GenericCompany.NoSuchProgram.Test"
         self.assertEqual(installer.install_location(p), "")
 
     @unittest.skipUnless(os.name == "nt", "cmd.exe")
@@ -262,4 +271,4 @@ class InstallerTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=b733c219aa5cc08722a381d308baf3f0f7342d08a978419c8fb37501320acb31 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=a09096e3193f30a0e2e887128c447348a3373c00ce3900abf00cdde1f7d658d6 ====

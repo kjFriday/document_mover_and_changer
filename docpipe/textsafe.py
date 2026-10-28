@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: document_mover_and_changer | File: docpipe/textsafe.py
+# About: Input guard for text that arrives from outside: drop invisible control characters, cap...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: document_mover_and_changer | File: docpipe/textsafe.py
 # About: Input guard for text that arrives from outside: drop invisible control characters, cap...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -33,4 +42,4 @@ def clean(text, limit=LIMIT):
         limit = max(limit, 0)  # a negative slice would count from the end
     return "".join(ch for ch in text if not refused(ch))[:limit]
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=835dbcf2adfd8e4e2de72559fa3b0f0e76a03e8a0285dec2f601aa36d436dfee ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=0a50a27015062cf193ae97af4120a8f3095365be781bfda974181a898799116d ====

@@ -1,25 +1,34 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
 # Project: document_mover_and_changer | File: docpipe/paths.py
-# About: Where the ACME Inc. programs keep their files on this computer.
+# About: Where the Generic Company Inc. programs keep their files on this computer.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
 # the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-"""Where the ACME Inc. programs keep their files on this computer.
+# ==== Generic Company Inc. portfolio ===============================================
+# Project: document_mover_and_changer | File: docpipe/paths.py
+# About: Where the Generic Company Inc. programs keep their files on this computer.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+"""Where the Generic Company Inc. programs keep their files on this computer.
 
 The shared database is the only link between the six programs. Its path is chosen in this order:
-the --db flag, the ACME_DB environment variable, the program's saved setting, then the default
-%LOCALAPPDATA%\\ACME Inc\\acme.db. Each program keeps its own settings.json in
-%LOCALAPPDATA%\\ACME Inc\\<app id>\\, holding just that path.
+the --db flag, the GENERIC_COMPANY_DB environment variable, the program's saved setting, then the default
+%LOCALAPPDATA%\\Generic Company Inc\\generic_company.db. Each program keeps its own settings.json in
+%LOCALAPPDATA%\\Generic Company Inc\\<app id>\\, holding just that path.
 """
 
 import json
 import os
 
-APP_ID = "ACME.DocPipe"
-COMPANY = "ACME Inc"
+APP_ID = "GenericCompany.DocPipe"
+COMPANY = "Generic Company Inc"
 SETTINGS_VERSION = 1
 
 
@@ -29,12 +38,12 @@ def local_appdata(env=None):
 
 
 def base_dir(env=None):
-    """%LOCALAPPDATA%\\ACME Inc: the shared database and every program's data folder."""
+    """%LOCALAPPDATA%\\Generic Company Inc: the shared database and every program's data folder."""
     return os.path.join(local_appdata(env), COMPANY)
 
 
 def default_db(env=None):
-    return os.path.join(base_dir(env), "acme.db")
+    return os.path.join(base_dir(env), "generic_company.db")
 
 
 def data_dir(app_id=APP_ID, env=None):
@@ -71,11 +80,11 @@ def save_settings(changes, app_id=APP_ID, env=None):
 
 
 def resolve_db(flag=None, app_id=APP_ID, env=None):
-    """--db, then ACME_DB, then the saved setting, then the shared default."""
+    """--db, then GENERIC_COMPANY_DB, then the saved setting, then the shared default."""
     env = os.environ if env is None else env
-    for choice in (flag, env.get("ACME_DB"), load_settings(app_id, env).get("db")):
+    for choice in (flag, env.get("GENERIC_COMPANY_DB"), load_settings(app_id, env).get("db")):
         if isinstance(choice, str) and choice.strip():
             return os.path.abspath(choice.strip())
     return default_db(env)
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=6e682249b7d0dcd6acc615feebbcc46d6f0d7968a982663993a2c4b873dd465b ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=0a095b95954ec8bbb892a096add23cb8524983d64ed8a856b9df4620c6af2a96 ====

@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: document_mover_and_changer | File: docpipe/gui.py
+# About: The Doc Pipeline window: pick the source, run the pipeline, browse the manifest and read...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: document_mover_and_changer | File: docpipe/gui.py
 # About: The Doc Pipeline window: pick the source, run the pipeline, browse the manifest and read...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -250,4 +259,4 @@ class PipelineWindow:
         ttk.Button(win, text="OK", command=win.destroy).pack(pady=(0, 16))
         win.transient(self.root)
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=2f4a7aa4df37a65f5c9fd1f6edf78a04e9c36f860a7def199047af6dde627c54 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=befce4e9231635985fea8673085f0f050c3eb870b3704b32769bf0625e7745d6 ====

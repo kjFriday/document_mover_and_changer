@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: document_mover_and_changer | File: docpipe/output/documents.py
+# About: Stage 5 output: render each order's documents (invoice, receipt, packing slip) as...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: document_mover_and_changer | File: docpipe/output/documents.py
 # About: Stage 5 output: render each order's documents (invoice, receipt, packing slip) as...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -42,7 +51,7 @@ def render(kind, order, customer, product):
     unit = (total / qty).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP) if qty else Decimal("0.00")
     name = fold((product or {}).get("name") or "Unknown product", 36)
     lines = [
-        "ACME Inc.".ljust(WIDTH - len(title)) + title,
+        "Generic Company Inc.".ljust(WIDTH - len(title)) + title,
         "=" * WIDTH,
         f"Order      #{order['id']:06d}",
         f"Date       {fold(order.get('ordered_at'), 16)}",
@@ -58,7 +67,7 @@ def render(kind, order, customer, product):
         lines += [f"{name:<36}{qty:>6}{money(unit):>10}{money(total):>12}", "-" * WIDTH, f"{'Total':<52}{money(total):>12}"]
         if kind == "receipt":
             lines.append("Paid in full. Thank you.")
-    lines += ["", "ACME Inc. is a fictional company; this document is mock data."]
+    lines += ["", "Generic Company Inc. is a fictional company; this document is mock data."]
     return "\n".join(lines) + "\n"
 
 
@@ -86,4 +95,4 @@ def build(data, out_dir):
     manifest.sort(key=lambda m: m["path"])
     return manifest, missing
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=563fe12906138084305bbef51422b1cd70bdcef5e5b2cfb606228066a14f9137 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=696f1fdd6849c65b002fe3e17883acf557dcf83dac5ebc7a78996c47950ae957 ====

@@ -1,6 +1,6 @@
 # docpipe
 
-A small document-processing pipeline for ACME Inc. (a fictional company),
+A small document-processing pipeline for Generic Company Inc. (a fictional company),
 written in standard-library Python. It follows the five-stage design in
 [idea.md](idea.md). Only the stages listed below have code so far.
 
@@ -19,9 +19,9 @@ written in standard-library Python. It follows the five-stage design in
 python -m docpipe
 ```
 
-Opens the **ACME Doc Pipeline** window. It reads the shared ACME database by path: `--db PATH`, the
-`ACME_DB` environment variable, the file chosen with **File → Database…**, or
-`%LOCALAPPDATA%\ACME Inc\acme.db`. With no database it runs on the bundled `mock/` snapshot (400 orders
+Opens the **Generic Company Doc Pipeline** window. It reads the shared Generic Company database by path: `--db PATH`, the
+`GENERIC_COMPANY_DB` environment variable, the file chosen with **File → Database…**, or
+`%LOCALAPPDATA%\Generic Company Inc\generic_company.db`. With no database it runs on the bundled `mock/` snapshot (400 orders
 and their documents) and says so. **Run** renders the newest orders' documents; **Register in database**
 also writes a `documents` row for each order that had none and one `documents.generated` event with the
 run's manifest hash. The manifest lists every file with its SHA-256; select one to read it.
@@ -32,7 +32,7 @@ The same run in a console:
 python -m docpipe --cli --register
 ```
 
-Files and `manifest.jsonl` go to `--out` (the window's default is `%LOCALAPPDATA%\ACME Inc\ACME.DocPipe\out`).
+Files and `manifest.jsonl` go to `--out` (the window's default is `%LOCALAPPDATA%\Generic Company Inc\GenericCompany.DocPipe\out`).
 The same input always gives the same files and hashes. A stored path that would climb out of the output
 folder is refused.
 
@@ -42,13 +42,13 @@ folder is refused.
 python -m docpipe --install
 ```
 
-Installs for the current user: copies the program to `%LOCALAPPDATA%\Programs\ACME Inc\ACME Doc Pipeline\`,
-adds it to the Start menu under **ACME Inc** with its pixel icon (`--desktop-shortcut` for the desktop too),
+Installs for the current user: copies the program to `%LOCALAPPDATA%\Programs\Generic Company Inc\Generic Company Doc Pipeline\`,
+adds it to the Start menu under **Generic Company Inc** with its pixel icon (`--desktop-shortcut` for the desktop too),
 and lists it in **Apps & features**. `python -m docpipe --uninstall` (or Apps & features) removes it; the
 database is never deleted. The shortcut uses the `pythonw.exe` that installed it, so reinstall after
 upgrading Python. `--root DIR` sandboxes all of it in DIR.
 
-`wizard-maker.exe build setup.json` (ACME Wizard Maker) makes the setup, `dist\ACME Doc Pipeline-0.2.0-setup.exe`.
+`wizard-maker.exe build setup.json` (Generic Company Wizard Maker) makes the setup, `dist\Generic Company Doc Pipeline-0.2.0-setup.exe`.
 
 The icon is Silk "folder_go" by Mark James, CC BY 2.5, enlarged by nearest-neighbour (`icon/README.md`).
 ## Shape hints

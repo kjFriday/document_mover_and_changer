@@ -7,15 +7,6 @@
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-# ==== Generic Company Inc. portfolio ===============================================
-# Project: document_mover_and_changer | File: docpipe/store.py
-# About: The shared Generic Company database, opened by path: the pipeline's only link to the other programs.
-# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
-# You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
-# Reused code, if any, is mapped in PROVENANCE.md.
-# ========================================================================
-
 """The shared Generic Company database, opened by path: the pipeline's only link to the other programs.
 
 from_db() gives the same shape as source.from_mock() (the newest orders, their documents rows, all
@@ -113,4 +104,4 @@ def register(conn, manifest, digest, when):
                            ("documents.generated", _clean("payload", payload), "sent", _clean("created_at", when)))
     return made, cur.lastrowid
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=e255544423ab5428d77c65061bb80ce4b9d9964be67ad4a01ae2b181c3b738b0 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=6b3feb1e908c9bb0f6d1ffeafe43d6ca4bd9099498ed7a50f4b8fe80eb8a273f ====

@@ -7,15 +7,6 @@
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-# ==== Generic Company Inc. portfolio ===============================================
-# Project: document_mover_and_changer | File: docpipe/enrich/normalize.py
-# About: Metadata normalisation for the enrich stage.
-# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
-# You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
-# Reused code, if any, is mapped in PROVENANCE.md.
-# ========================================================================
-
 """Metadata normalisation for the enrich stage.
 
 ``fold`` is for short metadata fields only: titles, authors, table cells.
@@ -64,4 +55,4 @@ def fold(value, limit=LIMIT):
             s = s[:max(limit, 0)]
     return s
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=373969c198bf1b3fe06dd0f77b5d45704102bff34c74c369825a52650a961a7f ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=061533c3a04b0e210c2dc38d93e5325e62ef06e6633f16cad64eb939ade24240 ====

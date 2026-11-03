@@ -7,15 +7,6 @@
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-# ==== Generic Company Inc. portfolio ===============================================
-# Project: document_mover_and_changer | File: docpipe/pipeline.py
-# About: One pipeline run, shared by the window and the command line: rows in, document files and...
-# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
-# You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
-# Reused code, if any, is mapped in PROVENANCE.md.
-# ========================================================================
-
 """One pipeline run, shared by the window and the command line: rows in, document files and manifest out."""
 
 import hashlib
@@ -67,4 +58,4 @@ def run(out, db_path=None, mock=MOCK, orders=400, register=False, now=None):
         "registered": made, "event": event,
     }
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=4732e4d8ae9c913c9e441ea64d417a49c32768af8fcff953eee517b549b38a9b ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=474917a0943896d03700a6fed06f1df4a22f3cf3b3c0c79f75bebab83f4bfca7 ====

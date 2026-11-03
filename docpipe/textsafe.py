@@ -7,15 +7,6 @@
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-# ==== Generic Company Inc. portfolio ===============================================
-# Project: document_mover_and_changer | File: docpipe/textsafe.py
-# About: Input guard for text that arrives from outside: drop invisible control characters, cap...
-# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
-# You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
-# Reused code, if any, is mapped in PROVENANCE.md.
-# ========================================================================
-
 """Input guard for text that arrives from outside: drop invisible control characters, cap the length.
 
 Removed: C0 controls except tab and newline, DEL, the whole C1 block (U+0080-U+009F, which includes
@@ -42,4 +33,4 @@ def clean(text, limit=LIMIT):
         limit = max(limit, 0)  # a negative slice would count from the end
     return "".join(ch for ch in text if not refused(ch))[:limit]
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=0a50a27015062cf193ae97af4120a8f3095365be781bfda974181a898799116d ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=3917a6839971c83fbf4b5f46fc443c4951fd5f9f2b7a418f661d2df8ef26e56f ====

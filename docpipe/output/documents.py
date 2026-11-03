@@ -7,15 +7,6 @@
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-# ==== Generic Company Inc. portfolio ===============================================
-# Project: document_mover_and_changer | File: docpipe/output/documents.py
-# About: Stage 5 output: render each order's documents (invoice, receipt, packing slip) as...
-# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
-# You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
-# Reused code, if any, is mapped in PROVENANCE.md.
-# ========================================================================
-
 """Stage 5 output: render each order's documents (invoice, receipt, packing slip) as plain-text files.
 
 Each `documents` row names its order, its kind and its relative path; `build` writes the file there
@@ -95,4 +86,4 @@ def build(data, out_dir):
     manifest.sort(key=lambda m: m["path"])
     return manifest, missing
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=696f1fdd6849c65b002fe3e17883acf557dcf83dac5ebc7a78996c47950ae957 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=57dc63213636c50d291e9d20d03b5fa6385ee6d912c924f69521a24c2ea7331c ====

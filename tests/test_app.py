@@ -7,15 +7,6 @@
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-# ==== Generic Company Inc. portfolio ===============================================
-# Project: document_mover_and_changer | File: tests/test_app.py
-# About: Doc Pipeline's identity: version, title, icon files and what an install copies.
-# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
-# You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
-# Reused code, if any, is mapped in PROVENANCE.md.
-# ========================================================================
-
 """Doc Pipeline's identity: version, title, icon files and what an install copies."""
 
 import hashlib
@@ -103,4 +94,4 @@ class AppTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=2988845038a66f3119c59a04ae086f8c79bee48bef49fbcf0d2ce4ec12a7d9ef ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=5d754938818346b81eb9573cf5242420c378d6b94a2cdbd152f1c3119afc355c ====

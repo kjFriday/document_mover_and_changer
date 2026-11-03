@@ -7,15 +7,6 @@
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-# ==== Generic Company Inc. portfolio ===============================================
-# Project: document_mover_and_changer | File: docpipe/paths.py
-# About: Where the Generic Company Inc. programs keep their files on this computer.
-# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
-# You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
-# Reused code, if any, is mapped in PROVENANCE.md.
-# ========================================================================
-
 """Where the Generic Company Inc. programs keep their files on this computer.
 
 The shared database is the only link between the six programs. Its path is chosen in this order:
@@ -87,4 +78,4 @@ def resolve_db(flag=None, app_id=APP_ID, env=None):
             return os.path.abspath(choice.strip())
     return default_db(env)
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=0a095b95954ec8bbb892a096add23cb8524983d64ed8a856b9df4620c6af2a96 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=5eb17ac8e5a9204765bbcd040c864b0a2159a49b09cdbb6cb10693e8b42200b8 ====

@@ -1,14 +1,5 @@
 # ==== Generic Company Inc. portfolio ====================================
 # Project: document_mover_and_changer | File: tests/test_hashing.py
-# About: ==== Generic Company Inc. portfolio ===============================================...
-# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
-# You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
-# Reused code, if any, is mapped in PROVENANCE.md.
-# ========================================================================
-
-# ==== Generic Company Inc. portfolio ===============================================
-# Project: document_mover_and_changer | File: tests/test_hashing.py
 # About: Tests for hashing.py.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
@@ -77,4 +68,4 @@ class Sha256OfTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=7ba80fe498cb04399592ff278ae54e31cd335f72197c4a76aa613b924cfe73fe ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=0cb7c8180bf0e1c640913bdf2119faa9d1c4573a355bb05323dffaade34b9e46 ====

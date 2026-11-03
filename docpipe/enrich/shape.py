@@ -7,15 +7,6 @@
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-# ==== Generic Company Inc. portfolio ===============================================
-# Project: document_mover_and_changer | File: docpipe/enrich/shape.py
-# About: Text-shape signatures and nearest-neighbour document-type hints.
-# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
-# You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
-# Reused code, if any, is mapped in PROVENANCE.md.
-# ========================================================================
-
 """Text-shape signatures and nearest-neighbour document-type hints.
 
 A signature counts what a block of text is made of (lines, characters by
@@ -359,4 +350,4 @@ def main(argv=None):
 if __name__ == "__main__":
     sys.exit(main())
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=4f1d527b5e8b6d35e594b2f6bf657cdd5cfdd79c007b9b5d119a7490248f37c0 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=b442d2766a84880b094428ca6b2b63ea07099e2b1c491201aa154f82382aba60 ====

@@ -52,7 +52,7 @@ class StoreTest(unittest.TestCase):
     def test_register_once_and_clean(self):
         db = mock_db(self.tmp, {"customers": [{"id": 1, "name": "A"}], "products": [{"id": 2, "name": "P"}],
                                 "orders": [{"id": 7, "customer_id": 1, "product_id": 2, "ordered_at": "2026-04-05T10:11"}]})
-        manifest = [{"document_id": None, "order_id": 7, "kind": "invoice‮", "path": "invoices/x.txt", "sha256": "0" * 64}]
+        manifest = [{"document_id": None, "order_id": 7, "kind": "invoice\u202e", "path": "invoices/x.txt", "sha256": "0" * 64}]
         conn = store.connect(db)
         try:
             made, event = store.register(conn, manifest, pipeline.digest, "2026-10-17T09:00")
@@ -80,4 +80,4 @@ class StoreTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=db2a6d24bd421739799f92b963b3c81e3f3784ad5ddb9ce69cd57fb88bbc60bc ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=05ac7c669f2dc17daddda7d45baa8a2e153fc3227609ff90e7e3e5b34c20526d ====

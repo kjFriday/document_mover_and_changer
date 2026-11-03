@@ -55,7 +55,7 @@ def parse(argv):
                     help="use the mock snapshot (default: the bundled one)")
     ap.add_argument("--cli", action="store_true", help="run once in the console instead of opening the window")
     ap.add_argument("--out", help="output folder (window default: %%LOCALAPPDATA%%\\Generic Company Inc\\GenericCompany.DocPipe\\out)")
-    ap.add_argument("--orders", type=int, default=400, help="how many of the newest orders")
+    ap.add_argument("--orders", type=int, default=pipeline.ORDERS, help="how many of the newest orders")
     ap.add_argument("--register", action="store_true", help="write documents rows and a summary event to the database")
     ap.add_argument("--version", action="store_true")
     ap.add_argument("--install", action="store_true")
@@ -76,8 +76,7 @@ def tell(message, quiet):
 
 
 def cli(args, db_path):
-    from docpipe.gui import describe_source
-    kind, text = describe_source(db_path, args.mock is not None)
+    kind, text = pipeline.describe_source(db_path, args.mock is not None)
     if args.register and kind != "db":
         print(f"--register needs the shared database ({text})", file=sys.stderr)
         return 1
@@ -139,4 +138,4 @@ def main(argv=None):
 if __name__ == "__main__":
     sys.exit(main())
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=19d3f27e3578937d662dccb9b663bc1b1ab8322f7f4e1221e9739febf01ce527 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=97887016f2d132b3230ca97de3d506a81fdb087f009e0e794afbb8741ed99ed0 ====

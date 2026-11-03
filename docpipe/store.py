@@ -29,6 +29,7 @@ NEEDS = {
     "events": {"id", "kind", "payload", "status", "created_at"},
 }
 UNCAPPED = {"payload", "path"}  # machine data (JSON, file paths): cleaned, never cut short
+ORDERS = 400  # newest orders a run reads by default: as many as the mock snapshot holds (tools/verify.ps1 expects 400)
 
 
 class SchemaError(Exception):
@@ -61,7 +62,7 @@ def _rows(conn, sql, args=()):
     return [dict(r) for r in conn.execute(sql, args)]
 
 
-def from_db(conn, orders=400):
+def from_db(conn, orders=ORDERS):
     """The newest `orders` orders (by id) and every document, customer and product row they need."""
     check_schema(conn)
     data = {"orders": _rows(conn, "SELECT * FROM orders ORDER BY id DESC LIMIT ?", (orders,))}
@@ -104,4 +105,4 @@ def register(conn, manifest, digest, when):
                            ("documents.generated", _clean("payload", payload), "sent", _clean("created_at", when)))
     return made, cur.lastrowid
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=23a90809d67766f6565049bc596a644d7882e1fc442b024c4062b280ce61bf5b ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=70ada5950d4a5636aa5ced69aa79a952c226d51dc5619ecee6cfb00acc69780e ====

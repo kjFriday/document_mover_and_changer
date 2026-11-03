@@ -10,18 +10,18 @@
 import io
 import json
 import os
+import subprocess
+import sys
 import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 
-from dbfixture import mock_db
+from dbfixture import MOCK, mock_db
 from docpipe import source
 from docpipe.__main__ import main
 from docpipe.output.documents import build, default_path, money, render
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-MOCK = os.path.join(HERE, "..", "mock")
-
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # the project folder, which holds docpipe/
 ORDER = {"id": 7, "customer_id": 1, "product_id": 2, "quantity": 3, "total": 0.30, "ordered_at": "2026-04-05T10:11"}
 CUSTOMER = {"id": 1, "name": "Zoë Müller", "email": "zoe.muller@mail.example", "city": "Lyon"}
 PRODUCT = {"id": 2, "name": "Rust Toolkit"}
@@ -86,7 +86,6 @@ class BuildTest(unittest.TestCase):
         self.assertEqual(missing, [])
 
 
-
 class CliTest(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
@@ -118,8 +117,21 @@ class CliTest(unittest.TestCase):
             self.assertEqual(main(["--cli", "--db", os.path.join(self.tmp, "none.db"), "--out", self.tmp, "--register"]), 1)
         self.assertIn("needs the shared database", err.getvalue())
 
+    def test_console_run_loads_no_window_code(self):
+        """--cli imports neither tkinter nor docpipe.gui (checked in a fresh interpreter: this suite loads both)."""
+        code = ("import contextlib, io, json, sys\n"
+                "from docpipe.__main__ import main\n"
+                "with contextlib.redirect_stdout(io.StringIO()):\n"
+                "    status = main(sys.argv[1:])\n"
+                "loaded = [name for name in ('tkinter', 'docpipe.gui') if name in sys.modules]\n"
+                "print(json.dumps({'exit': status, 'loaded': loaded}))\n")
+        proc = subprocess.run([sys.executable, "-c", code, "--cli", "--mock", MOCK, "--out", os.path.join(self.tmp, "out")],
+                              cwd=ROOT, capture_output=True, text=True, timeout=120)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(json.loads(proc.stdout), {"exit": 0, "loaded": []})
+
 
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=3d80f477f274852b3429b2e17bfe215c681c7f772d44fbbf93cf385b545b9c5d ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=603184270b5f2570043b530c1034a28b7814ead121644e08f5eff8bdbecc6255 ====

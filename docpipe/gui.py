@@ -18,11 +18,13 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from tkinter import font as tkfont
 
-from docpipe import APP_ID, CREDIT, NAME, PUBLISHER, TITLE, __version__, paths, pipeline, store
+from docpipe import APP_ID, CREDIT, NAME, PUBLISHER, TITLE, __version__, paths, pipeline
+from docpipe.pipeline import describe_source
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ICON = os.path.join(HERE, "icon", "app.ico")
 ICON_PNG = os.path.join(HERE, "icon", "app-32.png")
+MAX_ORDERS = 15000  # top of the Orders spinbox: as many orders as the CRUD hub's seed makes
 
 
 def windows_identity():
@@ -49,24 +51,9 @@ def set_icon(root):
     return bool(ctypes.windll.user32.SendMessageW(int(root.wm_frame(), 16), 0x7F, 1, 0))  # WM_GETICON
 
 
-def describe_source(db_path, force_mock=False):
-    """("db", path) when the shared database is usable, else ("mock", why)."""
-    if force_mock:
-        return "mock", "mock snapshot (--mock)"
-    if not os.path.isfile(db_path):
-        return "mock", f"mock snapshot — no database at {db_path}"
-    try:
-        conn = store.connect(db_path, readonly=True)
-        try:
-            store.check_schema(conn)
-        finally:
-            conn.close()
-    except Exception as e:  # missing tables, locked, not a database
-        return "mock", f"mock snapshot — {db_path}: {e}"
-    return "db", db_path
-
-
 class PipelineWindow:
+    """The main window. __main__ and its --smoke report use run_button, icon_set, last, start() and source()."""
+
     def __init__(self, root, db_path, out, force_mock=False, installer_action=None):
         self.root, self.db_path, self.force_mock = root, db_path, force_mock
         self.installer_action = installer_action
@@ -78,13 +65,21 @@ class PipelineWindow:
         ttk.Style(root).configure("Treeview", rowheight=line + 6)
         self.results = queue.Queue()
         self.last = None
+        self._build_menu()
+        self._build_controls(out)
+        self._build_panes()
+        self.status = tk.StringVar(value="Ready.")
+        ttk.Label(root, textvariable=self.status, anchor="w", padding=(10, 2)).pack(side="bottom", fill="x")
+        self.refresh_source()
 
-        menu = tk.Menu(root)
+    def _build_menu(self):
+        """File (database, output folder, exit) and Help (install, uninstall, about)."""
+        menu = tk.Menu(self.root)
         file_menu = tk.Menu(menu, tearoff=False)
         file_menu.add_command(label="Database…", command=self.choose_db)
         file_menu.add_command(label="Open output folder", command=self.open_out)
         file_menu.add_separator()
-        file_menu.add_command(label="Exit", command=root.destroy)
+        file_menu.add_command(label="Exit", command=self.root.destroy)
         help_menu = tk.Menu(menu, tearoff=False)
         help_menu.add_command(label="Install for this user", command=lambda: self.run_installer(False))
         help_menu.add_command(label="Uninstall…", command=lambda: self.run_installer(True))
@@ -92,9 +87,11 @@ class PipelineWindow:
         help_menu.add_command(label="About", command=self.about)
         menu.add_cascade(label="File", menu=file_menu)
         menu.add_cascade(label="Help", menu=help_menu)
-        root.config(menu=menu)
+        self.root.config(menu=menu)
 
-        top = ttk.Frame(root, padding=(10, 8))
+    def _build_controls(self, out):
+        """The source badge, then one row: output folder, order count, Register box and Run."""
+        top = ttk.Frame(self.root, padding=(10, 8))
         top.pack(fill="x")
         self.badge = tk.StringVar()
         ttk.Label(top, text="Source:").grid(row=0, column=0, sticky="w")
@@ -104,8 +101,8 @@ class PipelineWindow:
         ttk.Entry(top, textvariable=self.out).grid(row=1, column=1, sticky="ew", padx=6, pady=(6, 0))
         ttk.Button(top, text="…", width=3, command=self.choose_out).grid(row=1, column=2, pady=(6, 0))
         ttk.Label(top, text="Orders:").grid(row=1, column=3, sticky="e", padx=(12, 4), pady=(6, 0))
-        self.orders = tk.IntVar(value=400)
-        ttk.Spinbox(top, from_=1, to=15000, increment=100, width=7, textvariable=self.orders).grid(row=1, column=4, pady=(6, 0))
+        self.orders = tk.IntVar(value=pipeline.ORDERS)
+        ttk.Spinbox(top, from_=1, to=MAX_ORDERS, increment=100, width=7, textvariable=self.orders).grid(row=1, column=4, pady=(6, 0))
         self.register = tk.BooleanVar(value=False)
         self.register_box = ttk.Checkbutton(top, text="Register in database", variable=self.register)
         self.register_box.grid(row=1, column=5, padx=12, pady=(6, 0))
@@ -113,7 +110,9 @@ class PipelineWindow:
         self.run_button.grid(row=1, column=6, pady=(6, 0))
         top.columnconfigure(1, weight=1)
 
-        panes = ttk.PanedWindow(root, orient="horizontal")
+    def _build_panes(self):
+        """The manifest list and, beside it, the preview of the selected document."""
+        panes = ttk.PanedWindow(self.root, orient="horizontal")
         panes.pack(fill="both", expand=True, padx=10, pady=(0, 6))
         left = ttk.Frame(panes)
         self.tree = ttk.Treeview(left, columns=("kind", "order", "path", "sha"), show="headings")
@@ -128,10 +127,6 @@ class PipelineWindow:
         self.preview = tk.Text(panes, wrap="none", font=("Consolas", 10), state="disabled", width=66)
         panes.add(left, weight=1)
         panes.add(self.preview, weight=1)
-
-        self.status = tk.StringVar(value="Ready.")
-        ttk.Label(root, textvariable=self.status, anchor="w", padding=(10, 2)).pack(side="bottom", fill="x")
-        self.refresh_source()
 
     # --- state ---
 
@@ -171,7 +166,7 @@ class PipelineWindow:
     def start(self):
         kind, _ = self.source()
         args = dict(out=self.out.get(), db_path=self.db_path if kind == "db" else None,
-                    orders=max(1, int(self.orders.get() or 400)), register=self.register.get())
+                    orders=max(1, int(self.orders.get() or pipeline.ORDERS)), register=self.register.get())
         self.run_button.state(["disabled"])
         self.status.set("Running…")
         threading.Thread(target=self._work, args=(args,), daemon=True).start()
@@ -250,4 +245,4 @@ class PipelineWindow:
         ttk.Button(win, text="OK", command=win.destroy).pack(pady=(0, 16))
         win.transient(self.root)
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=77113b7a63658ab6556182c4865467f75a9530ce730986daffe8bdead8c7ac63 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=f3806c225c575fd97267687823caf7a0acf28e885776b37a34a5fc47f2e7757a ====

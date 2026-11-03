@@ -21,7 +21,7 @@ used; the rest of each source file was not copied.
 
 | File | Hub file | Changes |
 |---|---|---|
-| `docpipe/textsafe.py`, `tests/test_textsafe.py` | `textsafe.py`, `test_textsafe.py` | Unchanged apart from the import path. Cleans every string `docpipe.store` writes to the shared database. |
-| `docpipe/paths.py`, `tests/test_paths.py` | `paths.py`, `test_paths.py` | `APP_ID` is `GenericCompany.DocPipe`. |
-| `docpipe/installer.py`, `tests/test_installer.py` | `installer.py`, `test_installer.py` | Import path only. |
+| `docpipe/textsafe.py`, `tests/test_textsafe.py` | `textsafe.py`, `tests/test_textsafe.py` | Unchanged apart from the import path. Cleans every string `docpipe.store` writes to the shared database. |
+| `docpipe/paths.py`, `tests/test_paths.py` | `paths.py`, `tests/test_paths.py` | `APP_ID` is `GenericCompany.DocPipe`. |
+| `docpipe/installer.py`, `tests/test_installer.py` | `installer.py`, `tests/test_installer.py` | Import path only. |
 | `docpipe/gui.py` (`windows_identity`, `set_icon`) | `main.py` | Same calls; the window itself is new. |

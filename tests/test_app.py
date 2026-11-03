@@ -49,6 +49,17 @@ class AppTest(unittest.TestCase):
             self.assertIn(needed, files)
         self.assertFalse([f for f in files if f.startswith("tests/") or "__pycache__" in f])
 
+    def test_runtime_matches_setup_json_files(self):
+        """--install copies RUNTIME and a Wizard Maker setup copies setup.json "files": same entries, same places."""
+        with open(os.path.join(ROOT, "setup.json"), encoding="utf-8") as f:
+            rules = json.load(f)["files"]
+        self.assertEqual([r["from"] for r in rules], app.RUNTIME)
+        # Wizard Maker copies a file, or a folder's contents, into "to" (default: the install folder itself),
+        # so a folder needs "to" set to its own name and a top-level file none, to land where --install puts it
+        for r in rules:
+            folder = os.path.isdir(os.path.join(ROOT, r["from"]))
+            self.assertEqual(r.get("to", ""), r["from"] if folder else "", r["from"])
+
     def test_uninstall_hands_a_wizard_made_install_to_its_uninstaller(self):
         """--uninstall passes --quiet, --purge and --root on to uninstall.exe and returns its exit code."""
         tmp = tempfile.TemporaryDirectory()
@@ -90,8 +101,19 @@ class AppTest(unittest.TestCase):
             with open(os.path.join(ICON, name), "rb") as f:
                 self.assertEqual(hashlib.sha256(f.read()).hexdigest(), digest, name)
 
+    def test_window_module_imports(self):
+        """gui.py imports and uses the pipeline's source check; the order counts keep their values (400, 15000)."""
+        # the only test that loads gui.py: --cli no longer imports it
+        try:
+            import tkinter  # noqa: F401
+        except ImportError:
+            self.skipTest("this Python has no tkinter")
+        from docpipe import gui, pipeline, store
+        self.assertIs(gui.describe_source, pipeline.describe_source)
+        self.assertEqual((store.ORDERS, pipeline.ORDERS, gui.MAX_ORDERS), (400, 400, 15000))
+
 
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=863c7668148a9c0ebcb5253ad31ca058d3946e37cab5129ac99807dcb82e05a4 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=6255b1a5890627587866f0b2600c94a15bc0e22ca39dc3dee7f44f83aeef79dc ====

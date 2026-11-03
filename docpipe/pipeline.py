@@ -19,6 +19,24 @@ from docpipe.output.documents import build
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MOCK = os.path.join(HERE, "mock")  # the bundled snapshot, beside the package (also in an installed copy)
+ORDERS = store.ORDERS  # the default order count; store holds the value because it cannot import this module
+
+
+def describe_source(db_path, force_mock=False):
+    """("db", path) when the shared database is usable, else ("mock", why)."""
+    if force_mock:
+        return "mock", "mock snapshot (--mock)"
+    if not os.path.isfile(db_path):
+        return "mock", f"mock snapshot — no database at {db_path}"
+    try:
+        conn = store.connect(db_path, readonly=True)
+        try:
+            store.check_schema(conn)
+        finally:
+            conn.close()
+    except Exception as e:  # missing tables, locked, not a database
+        return "mock", f"mock snapshot — {db_path}: {e}"
+    return "db", db_path
 
 
 def manifest_lines(manifest):
@@ -29,7 +47,7 @@ def digest(manifest):
     return hashlib.sha256(manifest_lines(manifest).encode()).hexdigest()
 
 
-def run(out, db_path=None, mock=MOCK, orders=400, register=False, now=None):
+def run(out, db_path=None, mock=MOCK, orders=ORDERS, register=False, now=None):
     """Read the shared database at db_path (or the mock snapshot when db_path is None), write the
     documents and manifest.jsonl under out, and with register=True record them in the database.
     -> a summary dict (the manifest included)."""
@@ -58,4 +76,4 @@ def run(out, db_path=None, mock=MOCK, orders=400, register=False, now=None):
         "registered": made, "event": event,
     }
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=3593854eda517c6a5ac7ef70614390e7aff8992b696742f86a9c857f36924c87 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=4bb2ca1ace7ba5f61345c457d94b3f7d53648b22421e8c4ec64f4e9852b6510d ====

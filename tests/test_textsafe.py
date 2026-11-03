@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: tests/test_textsafe.py
+# Project: doc_pipeline | File: tests/test_textsafe.py
 # About: Tests for textsafe.clean.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -57,4 +57,4 @@ class CleanTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=2361830c933881b8930d4eea6112d454672d992b494157e3d2eb50e3f2e9a89e ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=7fd97108f69c53cfd38f22fc2a8aa229c4fd441ef854c9a64bdb6c1a3db907df ====

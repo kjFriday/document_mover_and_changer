@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: tests/test_documents.py
+# Project: doc_pipeline | File: tests/test_documents.py
 # About: Tests for documents.py.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -122,4 +122,4 @@ class CliTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=49c0eef81a554d12098ad205638f6dc39b85ccd4258be6e92f608dd9b6c9595e ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=3d80f477f274852b3429b2e17bfe215c681c7f772d44fbbf93cf385b545b9c5d ====

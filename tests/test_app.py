@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: tests/test_app.py
+# Project: doc_pipeline | File: tests/test_app.py
 # About: Doc Pipeline's identity: version, title, icon files and what an install copies.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -94,4 +94,4 @@ class AppTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=5d754938818346b81eb9573cf5242420c378d6b94a2cdbd152f1c3119afc355c ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=863c7668148a9c0ebcb5253ad31ca058d3946e37cab5129ac99807dcb82e05a4 ====

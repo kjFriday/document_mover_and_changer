@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: tests/dbfixture.py
+# Project: doc_pipeline | File: tests/dbfixture.py
 # About: A real SQLite database with the hub's exact schema (mock/schema.sql) for tests.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -38,4 +38,4 @@ def mock_db(folder, tables=None):
     conn.close()
     return path
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=3716990c32e3f64821d4a0286a1c96ff33ae389c4a0e7474159ebb24df62e260 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=dee73bdde1229d91a5e29ae2420db650a9ba85416243e767f640f6275b7fe66b ====

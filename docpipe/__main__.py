@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: docpipe/__main__.py
+# Project: doc_pipeline | File: docpipe/__main__.py
 # About: Generic Company Doc Pipeline: orders in, document files and a manifest out.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -139,4 +139,4 @@ def main(argv=None):
 if __name__ == "__main__":
     sys.exit(main())
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=d43dc1ca2ba5a7cbaa92cf03d73fa432e880d4aa0b26098b13185b66dd796cbb ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=19d3f27e3578937d662dccb9b663bc1b1ab8322f7f4e1221e9739febf01ce527 ====

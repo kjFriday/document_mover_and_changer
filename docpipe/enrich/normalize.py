@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: docpipe/enrich/normalize.py
+# Project: doc_pipeline | File: docpipe/enrich/normalize.py
 # About: Metadata normalisation for the enrich stage.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -55,4 +55,4 @@ def fold(value, limit=LIMIT):
             s = s[:max(limit, 0)]
     return s
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=061533c3a04b0e210c2dc38d93e5325e62ef06e6633f16cad64eb939ade24240 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=ea327fb0f179653079eb95ae1e782695f7cbc1d6d4edfbc824b05785a8a4cf10 ====

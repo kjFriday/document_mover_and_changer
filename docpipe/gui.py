@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: docpipe/gui.py
+# Project: doc_pipeline | File: docpipe/gui.py
 # About: The Doc Pipeline window: pick the source, run the pipeline, browse the manifest and read...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -250,4 +250,4 @@ class PipelineWindow:
         ttk.Button(win, text="OK", command=win.destroy).pack(pady=(0, 16))
         win.transient(self.root)
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=05e422972079bfbca8c3ba4a6d5e01f2747cf4dd99e433400fac5d255fc46611 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=77113b7a63658ab6556182c4865467f75a9530ce730986daffe8bdead8c7ac63 ====

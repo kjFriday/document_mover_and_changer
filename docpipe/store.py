@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: docpipe/store.py
+# Project: doc_pipeline | File: docpipe/store.py
 # About: The shared Generic Company database, opened by path: the pipeline's only link to the...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -104,4 +104,4 @@ def register(conn, manifest, digest, when):
                            ("documents.generated", _clean("payload", payload), "sent", _clean("created_at", when)))
     return made, cur.lastrowid
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=6b3feb1e908c9bb0f6d1ffeafe43d6ca4bd9099498ed7a50f4b8fe80eb8a273f ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=23a90809d67766f6565049bc596a644d7882e1fc442b024c4062b280ce61bf5b ====

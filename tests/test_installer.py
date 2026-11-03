@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: tests/test_installer.py
+# Project: doc_pipeline | File: tests/test_installer.py
 # About: Tests for installer.py.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -262,4 +262,4 @@ class InstallerTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=ae8171140789f8d7f8638fda06b592c35848c729bf7daeeca18e795ed4b80d47 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=31df33ef0c2308907862cdaf7e4f7a674b5962d44c053e5b35c845addcba8639 ====

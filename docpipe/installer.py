@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: docpipe/installer.py
+# Project: doc_pipeline | File: docpipe/installer.py
 # About: Install or uninstall an Generic Company program for the current user (no admin rights...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -338,4 +338,4 @@ def run_uninstaller(p, args, run=run_and_wait):
                                                else f"{WIZARD_UNINSTALLER} exited with {code}"))
     return said
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=9a7217b1830d114e83a97a2dea8b991d3af997f345e262f3465daf5c8b6a59d9 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=0220f9cca64ea5b9732085ff4c34f6c98ee32b2231e86d188ec7681b10783a8b ====

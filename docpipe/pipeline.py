@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: docpipe/pipeline.py
+# Project: doc_pipeline | File: docpipe/pipeline.py
 # About: One pipeline run, shared by the window and the command line: rows in, document files and...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -58,4 +58,4 @@ def run(out, db_path=None, mock=MOCK, orders=400, register=False, now=None):
         "registered": made, "event": event,
     }
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=474917a0943896d03700a6fed06f1df4a22f3cf3b3c0c79f75bebab83f4bfca7 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=3593854eda517c6a5ac7ef70614390e7aff8992b696742f86a9c857f36924c87 ====

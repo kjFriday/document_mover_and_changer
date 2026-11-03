@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: docpipe/ingest/hashing.py
+# Project: doc_pipeline | File: docpipe/ingest/hashing.py
 # About: Content hashing for ingest: duplicate detection and provenance.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -33,4 +33,4 @@ def sha256_of(path, chunk=CHUNK):
             h.update(block)
     return h.hexdigest()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=7a13aa5b11b4fac24460c88b6b3835555447ca5666a722c05cf3dc4b5dc4a4f4 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=a79da2952a880f60cb747b290a052776ec59f48fbea461b8ad44486790f6bdd3 ====

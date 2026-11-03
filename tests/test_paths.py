@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: tests/test_paths.py
+# Project: doc_pipeline | File: tests/test_paths.py
 # About: Tests for paths.py.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -62,4 +62,4 @@ class PathsTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=e39b3b776670764ad318c9bf14894e58bd503e625f1e78002246bcc10f5dd51c ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=34dc3fb615037bc2c1ea59fedca83c932fec0d4fd9226e13d590d6a45d2b3176 ====

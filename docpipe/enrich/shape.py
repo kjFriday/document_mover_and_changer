@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: docpipe/enrich/shape.py
+# Project: doc_pipeline | File: docpipe/enrich/shape.py
 # About: Text-shape signatures and nearest-neighbour document-type hints.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -350,4 +350,4 @@ def main(argv=None):
 if __name__ == "__main__":
     sys.exit(main())
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=b442d2766a84880b094428ca6b2b63ea07099e2b1c491201aa154f82382aba60 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=1d991824c2018c53352e8dd211753278efd27c50ba9ca6bc7e872686858e596c ====

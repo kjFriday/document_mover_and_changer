@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: docpipe/textsafe.py
+# Project: doc_pipeline | File: docpipe/textsafe.py
 # About: Input guard for text that arrives from outside: drop invisible control characters, cap...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -33,4 +33,4 @@ def clean(text, limit=LIMIT):
         limit = max(limit, 0)  # a negative slice would count from the end
     return "".join(ch for ch in text if not refused(ch))[:limit]
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=3917a6839971c83fbf4b5f46fc443c4951fd5f9f2b7a418f661d2df8ef26e56f ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=c6bd233c5aac80697ad901beddcc976a727e3e78040b9eb24c00147a446865bc ====

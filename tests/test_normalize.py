@@ -1,9 +1,9 @@
 # ==== Generic Company Inc. portfolio ====================================
-# Project: document_mover_and_changer | File: tests/test_normalize.py
+# Project: doc_pipeline | File: tests/test_normalize.py
 # About: Tests for normalize.py.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
-# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
@@ -59,4 +59,4 @@ class FoldTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=c66fafe795b1c3698ae13214ba079562fe683f516597283644ec65c7c94d418d ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=15bb41d16a735ccb4417c91a8a710cbca10ab488239ddcc8bc3cb0a14a972966 ====

@@ -7,7 +7,13 @@
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-"""Doc Pipeline's identity: version, title, icon files and what an install copies."""
+"""Doc Pipeline's identity: version, title, icon files and what an install copies.
+
+These tests pin the facts other tools depend on: one version number everywhere, the app id, the
+files --install copies against setup.json, the hand-off to a Wizard Maker uninstaller, the icon files
+and the hash table in icon/README.md, and that the window module still imports. Nothing here touches
+the real Start menu or registry: install plans are made with env={} and a sandbox root.
+"""
 
 import hashlib
 import io
@@ -23,11 +29,17 @@ import docpipe
 from docpipe import __main__ as app
 from docpipe import installer
 
+# The project folder and its icon folder.
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 ICON = os.path.join(ROOT, "icon")
 
 
 def png_size(path):
+    """Return a PNG file's (width, height) in pixels, read from its header without decoding it.
+
+    A PNG starts with an 8-byte signature, then the IHDR chunk: 4 bytes of length and 4 of type,
+    then width and height as big-endian 32-bit integers, so they sit at bytes 16..24.
+    """
     with open(path, "rb") as f:
         head = f.read(24)
     assert head[:8] == b"\x89PNG\r\n\x1a\n", path
@@ -35,7 +47,10 @@ def png_size(path):
 
 
 class AppTest(unittest.TestCase):
+    """Identity, install contents and icon checks for the whole program."""
+
     def test_one_version_everywhere(self):
+        """The version is x.y.z and the title and Apps & features entry show it; the app id and shortcut target are fixed."""
         self.assertRegex(docpipe.__version__, r"^\d+\.\d+\.\d+$")
         self.assertTrue(docpipe.TITLE.endswith(" " + docpipe.__version__))
         p = installer.plan(app.program(), app.HERE, env={}, root=os.path.join(ROOT, "_never_written"))
@@ -44,6 +59,7 @@ class AppTest(unittest.TestCase):
         self.assertTrue(p["shortcuts"][0]["args"].endswith('docpipe_app.py"'))
 
     def test_install_copies_runtime_only(self):
+        """An install includes the launcher, the package, the snapshot and the icon, and no tests or caches."""
         files = app.program().files
         for needed in ("docpipe_app.py", "docpipe/gui.py", "docpipe/output/documents.py", "mock/orders.json", "icon/app.ico"):
             self.assertIn(needed, files)
@@ -71,10 +87,13 @@ class AppTest(unittest.TestCase):
                        "shortcuts": [], "installer": "Generic Company Wizard Maker 0.1.0"}, f)
         calls = []
 
+        # stands in for installer.run_uninstaller: records the call and fails as a busy uninstaller does
+        # (exit code 4), so main() must pass that code on and keep the install marker
         def refused(p, args):
             calls.append((p["install_dir"], args))
             raise installer.UninstallerFailed(4, f"Setup or uninstall of {docpipe.NAME} is already running.")
 
+        # the module attribute is swapped for the rest of this test; the cleanup puts the real one back
         self.addCleanup(setattr, installer, "run_uninstaller", installer.run_uninstaller)
         installer.run_uninstaller = refused
         with redirect_stdout(io.StringIO()) as out:
@@ -88,12 +107,15 @@ class AppTest(unittest.TestCase):
         self.assertIn("Removed", out.getvalue())
 
     def test_icon_files(self):
+        """The icon files have their sizes, the .ico holds 4 images, and icon/README.md lists each file's true SHA-256."""
         self.assertEqual(png_size(os.path.join(ICON, "silk-folder_go.png")), (16, 16))
         for n in (32, 48, 256):
             self.assertEqual(png_size(os.path.join(ICON, f"app-{n}.png")), (n, n))
         with open(os.path.join(ICON, "app.ico"), "rb") as f:
             ico = f.read()
+        # ICONDIR header, three little-endian 16-bit fields: reserved (0), type (1 = icon), image count
         self.assertEqual(struct.unpack("<HHH", ico[:6]), (0, 1, 4))
+        # rows of the README table look like | `name` | ... | `<64 hex digits>` |; six files are listed
         with open(os.path.join(ICON, "README.md"), encoding="utf-8") as f:
             listed = dict(re.findall(r"\| `([^`]+)` \|[^|]*\| `([0-9a-f]{64})` \|", f.read()))
         self.assertEqual(len(listed), 6)
@@ -116,4 +138,4 @@ class AppTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=6255b1a5890627587866f0b2600c94a15bc0e22ca39dc3dee7f44f83aeef79dc ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=873366f1ad9082bcaa68ed3dcd3527c627276ca2a9cc59d5c275ca7923325967 ====

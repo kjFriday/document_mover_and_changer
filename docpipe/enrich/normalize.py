@@ -10,12 +10,29 @@
 """Metadata normalisation for the enrich stage.
 
 ``fold`` is for short metadata fields only: titles, authors, table cells.
-It is lossy (accents are stripped and other non-ASCII characters dropped), so
-never run it over body text.
+It is lossy (accents are stripped and other non-ASCII characters become
+spaces, which then collapse), so never run it over body text.
+
+docpipe.output.documents calls it on customer and product names, dates and
+kinds, so a fixed-width ASCII document never breaks on an odd character.
+
+How the folding works, for a reader new to Unicode normalisation:
+
+1. NFKD ("compatibility decomposition", Unicode Standard Annex #15) splits
+   an accented letter into its base letter plus a combining mark, so
+   U+00E9 (e with acute) becomes "e" + U+0301. It also maps compatibility
+   forms such as ligatures and full-width letters to plain ones.
+2. Dropping every combining mark then leaves the bare base letters.
+3. A short table maps the typographic punctuation NFKD leaves alone (curly
+   quotes, dashes, the multiplication and degree signs) to ASCII.
+4. Whatever is still outside printable ASCII becomes a space, whitespace
+   runs collapse to one space, and the result is capped at ``limit``.
 """
 
 import unicodedata
 
+# Default cap, in characters. The same number as textsafe.LIMIT, but set
+# separately: this module is a ported library and imports nothing from the app.
 LIMIT = 240
 
 # Punctuation that NFKD leaves alone, mapped to ASCII look-alikes. Written as
@@ -33,7 +50,11 @@ def fold(value, limit=LIMIT):
     joined with ", " (``None`` items skipped). Accented letters keep their
     base letter; anything else outside printable ASCII becomes a space, and
     runs of whitespace collapse to one space. Results longer than ``limit``
-    are cut and end in "...".
+    are cut and end in "..."; with a ``limit`` of 3 or less there is no room
+    for the dots, so the text is simply cut.
+
+    Each list item is folded with the same ``limit``, and the joined string is
+    capped again, so the whole result never exceeds ``limit``.
     """
     if value is None:
         return ""
@@ -41,6 +62,7 @@ def fold(value, limit=LIMIT):
         return "yes" if value else "no"
     if isinstance(value, (list, tuple)):
         value = ", ".join(fold(v, limit) for v in value if v is not None)
+    # split accented letters into base letter + combining mark, then drop the marks
     s = unicodedata.normalize("NFKD", str(value))
     s = "".join(c for c in s if not unicodedata.combining(c))
     for code, plain in _REPLACEMENTS:
@@ -52,7 +74,7 @@ def fold(value, limit=LIMIT):
         if limit > 3:
             s = s[:limit - 3] + "..."
         else:
-            s = s[:max(limit, 0)]
+            s = s[:max(limit, 0)]  # max(): a negative slice end would count from the end
     return s
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=ea327fb0f179653079eb95ae1e782695f7cbc1d6d4edfbc824b05785a8a4cf10 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=0734bd30aced233ae5e7d1d30f650f6559a4dc7ea585b55c5883fe33bc53a834 ====

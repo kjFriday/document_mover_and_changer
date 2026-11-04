@@ -11,19 +11,29 @@
 
 {"orders": [...], "documents": [...], "customers": [...], "products": [...]}, rows exactly as the CRUD
 hub's database holds them.
+
+docpipe.pipeline.run() reads it when there is no usable database. The JSON files in mock/ are written
+by the CRUD hub's mock export, so they track the hub's schema; this module only reads them.
 """
 
 import json
 import os
 
+# The tables a run needs, one <table>.json file each. tests/test_store.py compares exactly these
+# tables between the snapshot and a database built from it.
 TABLES = ("orders", "documents", "customers", "products")
 
 
 def from_mock(folder):
+    """Read <table>.json for each of TABLES from folder; -> {table: list of row dicts}.
+
+    The snapshot is returned whole (it holds 400 orders). Raises OSError for a missing or unreadable
+    file and json.JSONDecodeError (a ValueError) for a broken one.
+    """
     data = {}
     for table in TABLES:
         with open(os.path.join(folder, f"{table}.json"), encoding="utf-8") as f:
             data[table] = json.load(f)
     return data
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=31f1d29f26cbdb5dca1b654aef621c2ad397840ea05ec6daa24177d087d434ae ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=d32932df9c420e8a436b9e9a31c4f087b948f59359197903b4303e9eba9ca634 ====

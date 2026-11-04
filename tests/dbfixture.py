@@ -7,12 +7,19 @@
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-"""A real SQLite database with the hub's exact schema (mock/schema.sql) for tests."""
+"""A real SQLite database with the hub's exact schema (mock/schema.sql) for tests.
+
+test_store.py and test_documents.py import it as a top-level module (`from dbfixture import ...`),
+which works because `python -m unittest discover -s tests` puts tests/ on sys.path. Testing against a
+real file with the real schema catches what a hand-written stand-in would miss: column names,
+foreign keys, read-only opening.
+"""
 
 import json
 import os
 import sqlite3
 
+# This folder, and the bundled snapshot beside it: the hub's schema.sql and its <table>.json rows.
 HERE = os.path.dirname(os.path.abspath(__file__))
 MOCK = os.path.join(HERE, "..", "mock")
 
@@ -31,6 +38,7 @@ def mock_db(folder, tables=None):
                 tables[name] = json.load(f)
     for name, rows in tables.items():
         for row in rows:
+            # table and column names cannot be bound parameters; they come from test data, never input
             cols = list(row)
             conn.execute(f"INSERT INTO {name} ({', '.join(cols)}) VALUES ({', '.join('?' * len(cols))})",
                          [row[c] for c in cols])
@@ -38,4 +46,4 @@ def mock_db(folder, tables=None):
     conn.close()
     return path
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=dee73bdde1229d91a5e29ae2420db650a9ba85416243e767f640f6275b7fe66b ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=bc3ecdbbaa1b04dcb5bf7aa991a32885345f3912420ce71a4c815c67d3e3e944 ====

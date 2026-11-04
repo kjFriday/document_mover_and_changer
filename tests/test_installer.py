@@ -1,11 +1,19 @@
 # ==== Generic Company Inc. portfolio ====================================
 # Project: doc_pipeline | File: tests/test_installer.py
-# About: Tests for installer.py.
+# About: Tests for installer: the plan, the PowerShell text, and install/uninstall in a sandbox.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
 # the version kjFriday wrote. Verify with the portfolio's tools/stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
+
+"""Tests for installer: the plan, the PowerShell text, and install/uninstall in a sandbox.
+
+Almost every test uses root= (a sandbox under a temporary folder, registry in registry.json) and a
+Recorder instead of PowerShell, so nothing reaches the real Start menu or registry. The few tests
+marked skipUnless(os.name == "nt") run real PowerShell or cmd.exe, still inside the sandbox or on a
+registry key that does not exist.
+"""
 
 import datetime
 import json
@@ -17,15 +25,22 @@ from docpipe import installer
 
 
 class Recorder:
+    """A stand-in PowerShell runner that keeps each script it is given in .scripts."""
+
     def __init__(self):
+        """Start with no scripts."""
         self.scripts = []
 
     def __call__(self, script):
+        """Record script instead of running it."""
         self.scripts.append(script)
 
 
 class InstallerTest(unittest.TestCase):
+    """installer.py end to end, on a tiny three-file program in a temporary folder."""
+
     def setUp(self):
+        """A source folder with main.py, db.py and icon/app.ico (100 bytes each), a sandbox root and a Program."""
         self.tmp = tempfile.TemporaryDirectory()
         self.src = os.path.join(self.tmp.name, "src")
         os.makedirs(os.path.join(self.src, "icon"))
@@ -38,14 +53,17 @@ class InstallerTest(unittest.TestCase):
         self.cwd = os.getcwd()
 
     def tearDown(self):
+        """Return to the starting folder (uninstall moves to the temp folder), then remove the files."""
         os.chdir(self.cwd)
         self.tmp.cleanup()
 
     def plan(self, **kw):
+        """A sandbox plan with a fixed interpreter and date, so the values can be compared exactly."""
         return installer.plan(self.program, self.src, env={}, root=self.root, interpreter=r"C:\Py\python.exe",
                               today=datetime.date(2026, 10, 17), **kw)
 
     def test_plan_paths_and_registry(self):
+        """Folder, both shortcuts, the uninstall entry's values and the quoted shortcut argument."""
         p = self.plan(desktop=True)
         self.assertEqual(p["install_dir"], os.path.join(self.root, "Programs", "Generic Company Inc", "Generic Company Test App"))
         self.assertEqual([os.path.basename(s["path"]) for s in p["shortcuts"]], ["Generic Company Test App.lnk"] * 2)
@@ -61,6 +79,7 @@ class InstallerTest(unittest.TestCase):
         self.assertEqual(p["shortcuts"][0]["args"], '"' + os.path.join(p["install_dir"], "main.py") + '"')
 
     def test_real_locations(self):
+        """Without a sandbox the folders come from LOCALAPPDATA and APPDATA, and the registry is the real one (None)."""
         env = {"LOCALAPPDATA": r"C:\L", "APPDATA": r"C:\R", "USERPROFILE": r"C:\U"}
         programs, start, desk, reg = installer.locations(env)
         self.assertEqual(programs, os.path.join(r"C:\L", "Programs", "Generic Company Inc"))
@@ -68,6 +87,10 @@ class InstallerTest(unittest.TestCase):
         self.assertIsNone(reg)
 
     def test_script_quotes_and_registry(self):
+        """A ' in a path is doubled inside PowerShell quotes; ints are written as DWORD, text as String.
+
+        O'Brien is the classic name that breaks naive quoting.
+        """
         p = installer.plan(self.program, self.src, env={"LOCALAPPDATA": r"C:\O'Brien"}, interpreter=r"C:\Py\python.exe")
         script = installer.ps_script(p)
         self.assertIn("'C:\\O''Brien\\Programs\\Generic Company Inc\\Generic Company Test App\\icon\\app.ico,0'", script)
@@ -79,10 +102,16 @@ class InstallerTest(unittest.TestCase):
         self.assertNotIn("CreateShortcut", removal)
 
     def test_sandbox_script_never_touches_registry(self):
+        """Neither the install nor the removal script of a sandbox names HKCU."""
         self.assertNotIn("HKCU", installer.ps_script(self.plan()))
         self.assertNotIn("HKCU", installer.ps_script(self.plan(), remove=True))
 
     def test_round_trip(self):
+        """Install, reinstall over itself, uninstall from inside the folder: all gone but the database.
+
+        The uninstall starts with the install folder as the working folder, as the Start-menu
+        shortcut would; three scripts ran (two installs, one removal).
+        """
         p, run = self.plan(), Recorder()
         db = os.path.join(self.root, "generic_company.db")
         os.makedirs(self.root, exist_ok=True)
@@ -103,6 +132,7 @@ class InstallerTest(unittest.TestCase):
         self.assertEqual(len(run.scripts), 3)
 
     def test_guard_refuses_foreign_folder(self):
+        """Uninstall will not delete a folder without our marker; install will not write into another program's."""
         p = self.plan()
         os.makedirs(p["install_dir"])
         with open(os.path.join(p["install_dir"], "keep.txt"), "w") as f:
@@ -116,6 +146,7 @@ class InstallerTest(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(p["install_dir"], "keep.txt")))
 
     def test_purge_only_the_data_folder(self):
+        """purge_dir removes the program's data folder and nothing above it."""
         p, run = self.plan(), Recorder()
         data = os.path.join(self.root, "data", "GenericCompany.Test")
         os.makedirs(data)
@@ -125,6 +156,7 @@ class InstallerTest(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(self.root, "data")))
 
     def test_program_files_skip_tests_and_caches(self):
+        """test_ files, tests/ and __pycache__/ folders and missing entries are all left out."""
         os.makedirs(os.path.join(self.src, "pkg", "__pycache__"))
         os.makedirs(os.path.join(self.src, "pkg", "tests"))
         for rel in ("pkg/a.py", "pkg/test_b.py", "pkg/__pycache__/a.pyc", "pkg/tests/t.py", "test_main.py"):
@@ -147,6 +179,7 @@ class InstallerTest(unittest.TestCase):
             f.write("changed by the user")
 
     def test_wizard_install_is_its_uninstallers_to_remove(self):
+        """Only a marker that names this app id and an installer makes uninstall.exe the one to run."""
         p = self.plan()
         self.assertIsNone(installer.wizard_uninstaller(p))
         installer.install(p, Recorder())
@@ -157,15 +190,23 @@ class InstallerTest(unittest.TestCase):
         self.assertEqual(installer.wizard_uninstaller(p), os.path.join(p["install_dir"], "uninstall.exe"))
 
     def test_uninstall_args(self):
+        """No flags by default; quiet, purge and an absolute root in that order."""
         self.assertEqual(installer.uninstall_args(), [])
         self.assertEqual(installer.uninstall_args("sb", quiet=True, purge=True),
                          ["-quiet", "-purge", "-root", os.path.abspath("sb")])
 
     def test_run_uninstaller_keeps_changed_files_and_its_exit_code(self):
+        """A failing uninstaller's exit code and message come back in UninstallerFailed, and nothing is deleted here.
+
+        Also: the process leaves the install folder before running it, a success returns its output,
+        a silent cancel (exit 3) reads "Uninstall cancelled.", and a folder with no wizard install
+        is refused without running anything.
+        """
         p, calls = self.plan(), []
         self.wizard_install(p)
 
         def busy(exe, args):
+            """Stand-in uninstaller: record the command line, exit 4 as one already running would."""
             calls.append([exe, *args])
             return 4, "Setup or uninstall of Generic Company Test App is already running."
 
@@ -195,9 +236,11 @@ class InstallerTest(unittest.TestCase):
             json.dump({p["registry_key"]: {"InstallLocation": folder}}, f)
 
     def test_located_finds_a_wizard_install_elsewhere(self):
+        """The sandbox entry leads to a wizard install in another folder, but not when missing or stale."""
         p = self.plan()
 
         def real(script):
+            """Fail the test: a sandbox must read registry.json, never PowerShell."""
             raise AssertionError("read the real registry in a sandbox")
 
         self.assertIs(installer.located(p, real), p)  # no entry
@@ -212,6 +255,7 @@ class InstallerTest(unittest.TestCase):
         self.assertEqual(calls, [os.path.join(elsewhere["install_dir"], "uninstall.exe")])
 
     def test_located_never_clears_an_install_elsewhere(self):
+        """Another program's install, or a folder with no marker, where the entry points is refused; the entry stays."""
         p = self.plan()
         elsewhere = dict(p, install_dir=os.path.join(self.root, "Apps", "Journal"))
         self.entry(p, elsewhere["install_dir"])
@@ -225,6 +269,7 @@ class InstallerTest(unittest.TestCase):
             self.assertIn(p["registry_key"], json.load(f))
 
     def test_located_reads_the_real_registry(self):
+        """Outside a sandbox the entry is read with Get-ItemProperty; a relative or empty answer is ignored."""
         p = installer.plan(self.program, self.src, env={}, interpreter=r"C:\Py\python.exe")
         folder, scripts = os.path.join(self.root, "Apps", "Journal"), []
         self.wizard_install(dict(p, install_dir=folder))
@@ -237,6 +282,7 @@ class InstallerTest(unittest.TestCase):
 
     @unittest.skipUnless(os.name == "nt", "PowerShell")
     def test_read_powershell(self):
+        """Real PowerShell: a non-ASCII character comes back intact (UTF-8), and a missing key reads as ""."""
         self.assertEqual(installer.read_powershell("'M' + [char]0xF6 + 'tley'"), "M\u00f6tley")
         p = installer.plan(self.program, self.src, env={}, interpreter=r"C:\Py\python.exe")
         p["registry_key"] = installer.UNINSTALL_KEY + "\\GenericCompany.NoSuchProgram.Test"
@@ -244,12 +290,14 @@ class InstallerTest(unittest.TestCase):
 
     @unittest.skipUnless(os.name == "nt", "cmd.exe")
     def test_run_and_wait_returns_the_exit_code(self):
+        """cmd.exe exiting 4 gives (4, its output); a program that does not exist raises OSError."""
         self.assertEqual(installer.run_and_wait("cmd.exe", ["/d", "/c", "echo kept & exit 4"]), (4, "kept"))
         with self.assertRaises(OSError):
             installer.run_and_wait(os.path.join(self.tmp.name, "uninstall.exe"), [])
 
     @unittest.skipUnless(os.name == "nt", "Windows shortcuts")
     def test_real_shortcut_in_sandbox(self):
+        """Real PowerShell makes the .lnk in the sandbox Start menu; uninstall removes it and its emptied folder."""
         p = self.plan()
         installer.install(p, installer.run_powershell)
         link = p["shortcuts"][0]["path"]
@@ -262,4 +310,4 @@ class InstallerTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=31df33ef0c2308907862cdaf7e4f7a674b5962d44c053e5b35c845addcba8639 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=27e424fb484f9bad39080c9bb9004e696b59a3a116fd886f606f4463b16df66b ====

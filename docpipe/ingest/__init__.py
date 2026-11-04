@@ -7,6 +7,15 @@
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-"""Stage 1: ingestion and routing."""
+"""Stage 1: ingestion and routing.
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=a4ec1150d5b719fcd3f32f28cbd6a9e1a1db70919a6cc1ab8b98e0f338cec3e1 ====
+Stage 1 of the five-stage design in idea.md. Its only module so far:
+
+    hashing   sha256_of(): a chunked SHA-256 of a file, for duplicate detection and provenance
+              (docpipe.output.documents hashes every file it writes with it)
+
+Routing is not written yet; docpipe.enrich.shape's document-type hints are meant to feed it.
+This file holds no code; it only marks the folder as a package.
+"""
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=2f588f4613df24722870bd373fd5fb204dc5c3110ae9ea71eef536b65f8be054 ====
